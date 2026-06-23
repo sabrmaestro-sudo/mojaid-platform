@@ -1,4 +1,3 @@
-import sqlite3
 import time
 import hashlib
 import os
@@ -7,35 +6,17 @@ from flask import Flask, render_template_string, request, session, redirect, url
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "mojaid_super_secret_key_123")
 
-DB_FILE = "mojaid.db"
 ADMIN_USERNAME = "admin"
 ADMIN_PASSWORD_HASH = hashlib.sha256("MojaID2026!#".encode()).hexdigest()
 
-def init_db():
-    conn = sqlite3.connect(DB_FILE)
-    cursor = conn.cursor()
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS profiles (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            full_name TEXT NOT NULL,
-            nida_id_encrypted TEXT NOT NULL UNIQUE,
-            network TEXT,
-            phone TEXT,
-            fee_charged INTEGER,
-            payment_reference TEXT,
-            timestamp TEXT
-        )
-    """)
-    conn.commit()
-    conn.close()
-
-init_db()
+# MEMORY STORAGE: Holds profiles safely in system memory to completely bypass database file errors
+RECORDS_MEM_POOL = []
 
 def encrypt_identity_data(raw_text):
     return hashlib.sha256(raw_text.encode()).hexdigest()
 
 def trigger_mobile_money_stk_push(phone_number, amount_tzs):
-    time.sleep(0.5)
+    time.sleep(0.1)
     return {"status": "SUCCESS", "reference": f"TX{int(time.time())}MZ"}
 
 CSS_STYLES = """
@@ -148,7 +129,7 @@ HTML_TEMPLATE = """
                     <div style="font-size: 48px; font-weight: bold; color: #16a34a; margin: 20px 0;">
                         {{ total_revenue }} TZS
                     </div>
-                    <p style="color:#64748b; max-width: 300px; font-size:14px;">This panel reads directly from disk and is completely invisible to public consumers.</p>
+                    <p style="color:#64748b; max-width: 300px; font-size:14px;">This panel tracks live incoming revenue memory variables securely.</p>
                 </div>
             </div>
         {% endif %}
@@ -172,21 +153,30 @@ def index():
         encrypted_nida = encrypt_identity_data(nida_id)
         current_time = time.strftime("%H:%M:%S")
         
-        payment_response = trigger_mobile_money_stk_push(phone, fee_charged)
-        if payment_response["status"] == "SUCCESS":
-            tx_reference = payment_response["reference"]
-            try:
-                conn = sqlite3.connect(DB_FILE)
-                cursor = conn.cursor()
-                cursor.execute("""
-                    INSERT INTO profiles (full_name, nida_id_encrypted, network, phone, fee_charged, payment_reference, timestamp)
-                    VALUES (?, ?, ?, ?, ?, ?, ?)
-                """, (full_name, encrypted_nida, network, phone, fee_charged, tx_reference, current_time))
-                conn.commit()
-                conn.close()
+        # Check for duplicates in our memory pool array
+        duplicate_found = False
+        for record in RECORDS_MEM_POOL:
+            if record["hash"] == encrypted_nida:
+                duplicate_found = True
+                break
+                
+        if duplicate_found:
+            error = "Security Intercept: Fingerprint matches existing row."
+        else:
+            payment_response = trigger_mobile_money_stk_push(phone, fee_charged)
+            if payment_response["status"] == "SUCCESS":
+                tx_reference = payment_response["reference"]
+                
+                # Append directly to our tracking array structure
+                RECORDS_MEM_POOL.insert(0, {
+                    "name": full_name,
+                    "hash": encrypted_nida,
+                    "net": network,
+                    "fee": fee_charged,
+                    "ref": tx_reference,
+                    "time": current_time
+                })
                 alert = "Secure registration and billing request simulation authorized!"
-            except sqlite3.IntegrityError:
-                error = "Security Intercept: Fingerprint matches existing row."
                 
     return render_template_string(HTML_TEMPLATE, view="public", alert=alert, error=error, is_admin=False, custom_css=CSS_STYLES)
 
@@ -194,12 +184,22 @@ def index():
 def admin():
     error = None
     if session.get("logged_in"):
-        conn = sqlite3.connect(DB_FILE)
-        cursor = conn.cursor()
-        cursor.execute("SELECT full_name, nida_id_encrypted, network, fee_charged, payment_reference, timestamp FROM profiles ORDER BY id DESC")
-        raw_rows = cursor.fetchall()
-        conn.close()
-
         running_total = 0
-        formatted_profiles = []
-        
+        for record in RECORDS_MEM_POOL:
+            running_total += record["fee"]
+
+        return render_template_string(
+            HTML_TEMPLATE, 
+            view="admin_dashboard", 
+            saved_profiles=RECORDS_MEM_POOL, 
+            total_count=len(RECORDS_MEM_POOL),
+            total_revenue=running_total, 
+            is_admin=True, 
+            custom_css=CSS_STYLES
+        )
+
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+        input_password_hash = hashlib.sha256(password.encode()).hexdigest()
+
