@@ -5,15 +5,12 @@ import os
 from flask import Flask, render_template_string, request, session, redirect, url_for
 
 app = Flask(__name__)
-
-# SECURITY REQUIREMENT: Encrypts browser cookies to hold sessions securely.
 app.secret_key = os.environ.get("SECRET_KEY", "mojaid_super_secret_key_123")
 
 DB_FILE = "mojaid.db"
 ADMIN_USERNAME = "admin"
-ADMIN_PASSWORD_HASH = hashlib.sha256("MojaID2026!#".encode()).hexdigest() # Secure hashed password
+ADMIN_PASSWORD_HASH = hashlib.sha256("MojaID2026!#".encode()).hexdigest()
 
-# --- DATABASE ARCHITECTURE SETUP ---
 def init_db():
     conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
@@ -41,7 +38,6 @@ def trigger_mobile_money_stk_push(phone_number, amount_tzs):
     time.sleep(0.5)
     return {"status": "SUCCESS", "reference": f"TX{int(time.time())}MZ"}
 
-# --- ADVANCED TEMPLATE INCORPORATING PUBLIC INTERFACE & ADMIN PORTAL ---
 HTML_TEMPLATE = """
 <!DOCTYPE html>
 <html lang="en">
@@ -82,7 +78,6 @@ HTML_TEMPLATE = """
     </div>
 
     <div class="container">
-        <!-- VIEW 1: PUBLIC REGISTRATION GATEWAY -->
         {% if view == "public" %}
             <div class="card" style="max-width: 500px; margin: 0 auto;">
                 <h2>Citizen Wallet Registry</h2>
@@ -111,7 +106,6 @@ HTML_TEMPLATE = """
             </div>
         {% endif %}
 
-        <!-- VIEW 2: SECURE ADMIN LOGIN FORM -->
         {% if view == "login" %}
             <div class="card" style="max-width: 400px; margin: 50px auto;">
                 <h2>System Administrator Authentication</h2>
@@ -128,7 +122,6 @@ HTML_TEMPLATE = """
             </div>
         {% endif %}
 
-        <!-- VIEW 3: PROTECTED BUSINESS INTELLIGENCE DASHBOARD -->
         {% if view == "admin_dashboard" %}
             <div class="card">
                 <h2>📈 Live Cumulative Cashflow Earnings Timeline</h2>
@@ -200,3 +193,12 @@ def index():
         nida_id = request.form.get("nida_id")
         network = request.form.get("network")
         phone = request.form.get("phone")
+        fee_charged = 300
+        
+        encrypted_nida = encrypt_identity_data(nida_id)
+        current_time = time.strftime("%H:%M:%S")
+        
+        payment_response = trigger_mobile_money_stk_push(phone, fee_charged)
+        if payment_response["status"] == "SUCCESS":
+            tx_reference = payment_response["reference"]
+            try:
