@@ -38,6 +38,27 @@ def trigger_mobile_money_stk_push(phone_number, amount_tzs):
     time.sleep(0.5)
     return {"status": "SUCCESS", "reference": f"TX{int(time.time())}MZ"}
 
+# CLEAN ARCHITECTURE: CSS is isolated to completely bypass server compilation errors
+CSS_STYLES = """
+body { font-family: Arial, sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px; }
+.container { max-width: 1100px; margin: 0 auto; }
+.card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 8px solid #1e3a8a; margin-bottom: 20px; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+h1, h2 { color: #1e3a8a; margin-top: 0; }
+label { font-weight: bold; color: #333; display: block; margin-top: 10px; font-size: 14px; }
+input[type="text"], input[type="password"] { width: 100%; padding: 10px; margin-top: 5px; margin-bottom: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+select { width: 100%; padding: 10px; margin-top: 5px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 6px; }
+.btn-submit { background-color: #1a365d; color: white; border: none; padding: 12px; font-size: 16px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; }
+.profile-box { background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 8px; margin-bottom: 15px; font-size: 13px; position: relative; word-wrap: break-word; }
+.badge { background: #e0e7ff; color: #3730a3; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; display: inline-block; margin-top: 5px; }
+.crypto-badge { background: #fee2e2; color: #991b1b; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-family: monospace; display: block; margin-top: 5px; }
+.fee-badge { background: #dcfce7; color: #166534; position: absolute; right: 15px; top: 15px; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; }
+.alert-box { background: #e0f2fe; color: #0369a1; padding: 12px; border-radius: 8px; font-weight: bold; text-align: center; margin-bottom: 15px; }
+.error-msg { color: #dc2626; font-weight: bold; margin-bottom: 15px; text-align: center; }
+.nav-bar { max-width: 1100px; margin: 0 auto 15px auto; display: flex; justify-content: space-between; align-items: center; }
+.btn-nav { text-decoration: none; color: #1e3a8a; font-weight: bold; border: 1px solid #1e3a8a; padding: 6px 12px; border-radius: 6px; }
+"""
+
 HTML_TEMPLATE = """
 <!DOCTYPE html>
 <html lang="en">
@@ -46,25 +67,7 @@ HTML_TEMPLATE = """
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MojaID Production Hub</title>
     <script src="https://jsdelivr.net"></script>
-    <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px; }
-        .container { max-width: 1100px; margin: 0 auto; }
-        .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 8px solid #1e3a8a; margin-bottom: 20px; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        h1, h2 { color: #1e3a8a; margin-top: 0; }
-        label { font-weight: bold; color: #333; display: block; margin-top: 10px; font-size: 14px; }
-        input[type="text"], input[type="password"] { width: 100%; padding: 10px; margin-top: 5px; margin-bottom: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
-        select { width: 100%; padding: 10px; margin-top: 5px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 6px; }
-        .btn-submit { background-color: #1a365d; color: white; border: none; padding: 12px; font-size: 16px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; }
-        .profile-box { background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 8px; margin-bottom: 15px; font-size: 13px; position: relative; word-wrap: break-word; }
-        .badge { background: #e0e7ff; color: #3730a3; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; display: inline-block; margin-top: 5px; }
-        .crypto-badge { background: #fee2e2; color: #991b1b; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-family: monospace; display: block; margin-top: 5px; }
-        .fee-badge { background: #dcfce7; color: #166534; position: absolute; right: 15px; top: 15px; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; }
-        .alert-box { background: #e0f2fe; color: #0369a1; padding: 12px; border-radius: 8px; font-weight: bold; text-align: center; margin-bottom: 15px; }
-        .error-msg { color: #dc2626; font-weight: bold; margin-bottom: 15px; text-align: center; }
-        .nav-bar { max-width: 1100px; margin: 0 auto 15px auto; display: flex; justify-content: space-between; align-items: center; }
-        .btn-nav { text-decoration: none; color: #1e3a8a; font-weight: bold; border: 1px solid #1e3a8a; padding: 6px 12px; border-radius: 6px; }
-    </style>
+    <style>{{ custom_css }}</style>
 </head>
 <body>
 
@@ -202,3 +205,4 @@ def index():
         if payment_response["status"] == "SUCCESS":
             tx_reference = payment_response["reference"]
             try:
+                conn = sqlite3.connect(DB_FILE)
