@@ -126,18 +126,18 @@ HTML_TEMPLATE = """
         {% if view == "admin_dashboard" %}
             <div class="grid-2">
                 <div class="card">
-                    <h2>🔒 Encrypted Financial Ledger ({{ saved_profiles|length }})</h2>
+                    <h2>🔒 Encrypted Financial Ledger ({{ total_count }})</h2>
                     <div style="max-height: 400px; overflow-y: auto;">
-                        {% if not saved_profiles %}
+                        {% if total_count == 0 %}
                             <p style="color: #888; text-align: center; margin-top: 50px;">No encrypted records stored.</p>
                         {% endif %}
                         {% for p in saved_profiles %}
                             <div class="profile-box">
-                                <div class="fee-badge">PAID +{{ p[5] }} TZS</div>
-                                <strong>👤 {{ p[1] }}</strong> <small style="color:#64748b;">(Via {{ p[3] }})</small><br>
+                                <div class="fee-badge">PAID +{{ p.fee }} TZS</div>
+                                <strong>👤 {{ p.name }}</strong> <small style="color:#64748b;">(Via {{ p.net }})</small><br>
                                 <span class="badge">🔒 SHA-256 Encrypted NIDA Signature:</span>
-                                <span class="crypto-badge">{{ p[2] }}</span>
-                                <small style="color: #64748b; display:inline-block; margin-top:8px;">Ref ID: {{ p[6] }} | Sync Time: {{ p[7] }}</small>
+                                <span class="crypto-badge">{{ p.hash }}</span>
+                                <small style="color: #64748b; display:inline-block; margin-top:8px;">Ref ID: {{ p.ref }} | Sync Time: {{ p.time }}</small>
                             </div>
                         {% endfor %}
                     </div>
@@ -196,10 +196,10 @@ def admin():
     if session.get("logged_in"):
         conn = sqlite3.connect(DB_FILE)
         cursor = conn.cursor()
-        cursor.execute("SELECT timestamp, fee_charged FROM profiles ORDER BY id ASC")
-        raw_history = cursor.fetchall()
-        cursor.execute("SELECT * FROM profiles ORDER BY id DESC")
-        saved_profiles = cursor.fetchall()
+        cursor.execute("SELECT full_name, nida_id_encrypted, network, fee_charged, payment_reference, timestamp FROM profiles ORDER BY id DESC")
+        raw_rows = cursor.fetchall()
         conn.close()
 
         running_total = 0
+        formatted_profiles = []
+        
