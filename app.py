@@ -38,7 +38,6 @@ def trigger_mobile_money_stk_push(phone_number, amount_tzs):
     time.sleep(0.5)
     return {"status": "SUCCESS", "reference": f"TX{int(time.time())}MZ"}
 
-# CLEAN ARCHITECTURE: CSS is isolated to completely bypass server compilation errors
 CSS_STYLES = """
 body { font-family: Arial, sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px; }
 .container { max-width: 1100px; margin: 0 auto; }
@@ -66,7 +65,6 @@ HTML_TEMPLATE = """
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MojaID Production Hub</title>
-    <script src="https://jsdelivr.net"></script>
     <style>{{ custom_css }}</style>
 </head>
 <body>
@@ -126,13 +124,6 @@ HTML_TEMPLATE = """
         {% endif %}
 
         {% if view == "admin_dashboard" %}
-            <div class="card">
-                <h2>📈 Live Cumulative Cashflow Earnings Timeline</h2>
-                <div style="width: 100%; max-height: 220px;">
-                    <canvas id="earningsChart"></canvas>
-                </div>
-            </div>
-
             <div class="grid-2">
                 <div class="card">
                     <h2>🔒 Encrypted Financial Ledger ({{ saved_profiles|length }})</h2>
@@ -160,26 +151,6 @@ HTML_TEMPLATE = """
                     <p style="color:#64748b; max-width: 300px; font-size:14px;">This panel reads directly from disk and is completely invisible to public consumers.</p>
                 </div>
             </div>
-
-            <script>
-                const ctx = document.getElementById('earningsChart').getContext('2d');
-                new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: {{ chart_labels|tojson }},
-                        datasets: [{
-                            label: 'Platform Profit Curve (TZS)',
-                            data: {{ chart_data|tojson }},
-                            borderColor: '#16a34a',
-                            backgroundColor: 'rgba(22, 163, 74, 0.1)',
-                            borderWidth: 3,
-                            fill: true,
-                            tension: 0.2
-                        }]
-                    },
-                    options: { responsive: true, maintainAspectRatio: false }
-                });
-            </script>
         {% endif %}
     </div>
 
@@ -206,3 +177,29 @@ def index():
             tx_reference = payment_response["reference"]
             try:
                 conn = sqlite3.connect(DB_FILE)
+                cursor = conn.cursor()
+                cursor.execute("""
+                    INSERT INTO profiles (full_name, nida_id_encrypted, network, phone, fee_charged, payment_reference, timestamp)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                """, (full_name, encrypted_nida, network, phone, fee_charged, tx_reference, current_time))
+                conn.commit()
+                conn.close()
+                alert = "Secure registration and billing request simulation authorized!"
+            except sqlite3.IntegrityError:
+                error = "Security Intercept: Fingerprint matches existing row."
+                
+    return render_template_string(HTML_TEMPLATE, view="public", alert=alert, error=error, is_admin=False, custom_css=CSS_STYLES)
+
+@app.route("/admin", methods=["GET", "POST"])
+def admin():
+    error = None
+    if session.get("logged_in"):
+        conn = sqlite3.connect(DB_FILE)
+        cursor = conn.cursor()
+        cursor.execute("SELECT timestamp, fee_charged FROM profiles ORDER BY id ASC")
+        raw_history = cursor.fetchall()
+        cursor.execute("SELECT * FROM profiles ORDER BY id DESC")
+        saved_profiles = cursor.fetchall()
+        conn.close()
+
+        running_total = 0
