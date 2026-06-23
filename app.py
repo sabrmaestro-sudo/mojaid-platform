@@ -6,14 +6,14 @@ from flask import Flask, render_template_string, request, session, redirect, url
 
 app = Flask(__name__)
 
-# SECURITY REQUIREMENT: Encrypts browser cookies to hold sessions.
+# SECURITY REQUIREMENT: Encrypts browser cookies to hold sessions securely.
 app.secret_key = os.environ.get("SECRET_KEY", "mojaid_super_secret_key_123")
 
 DB_FILE = "mojaid.db"
 ADMIN_USERNAME = "admin"
 ADMIN_PASSWORD_HASH = hashlib.sha256("MojaID2026!#".encode()).hexdigest() # Secure hashed password
 
-# --- DATABASE SETUP ---
+# --- DATABASE ARCHITECTURE SETUP ---
 def init_db():
     conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
@@ -200,4 +200,3 @@ def index():
         nida_id = request.form.get("nida_id")
         network = request.form.get("network")
         phone = request.form.get("phone")
-        fee_charged = 300
