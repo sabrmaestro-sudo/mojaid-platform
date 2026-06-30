@@ -95,6 +95,7 @@ def secret_admin(token):
     if not RECORDS_MEM_POOL:
         ledger_html = '<p style="color:var(--text-muted); text-align:center; margin-top:40px; font-size:15px;">No encrypted records stored inside memory cache.</p>'
 
-    revenue_string = str(f"{running_total:,}")
+    # ABSOLUTE FIX: Plain unformatted text conversion ensures the server boots with zero variable clashing
+    revenue_string = str(running_total)
 
     html_dashboard = "<!DOCTYPE html><html><head><title>MojaID Owner Hub</title>" + BASE_STYLES + "</head><body>"
