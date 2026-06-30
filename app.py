@@ -15,7 +15,7 @@ RECORDS_MEM_POOL = []
 def encrypt_identity_data(raw_text):
     return hashlib.sha256(raw_text.encode()).hexdigest()
 
-# UNIVERSAL CLEAN STYLES FOR THE WEB DASHBOARD
+# UNIVERSAL STYLES FOR BOTH LAYOUTS
 BASE_STYLES = """
 <style>
     body { font-family: Arial, sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px; text-align: center; }
@@ -46,7 +46,6 @@ def index():
         network = request.form.get("network")
         phone = request.form.get("phone")
         
-        # CAPTURING THE MISSING IDENTITIES
         nhif = request.form.get("nhif") if request.form.get("nhif") else "NOT LINKED"
         license = request.form.get("license") if request.form.get("license") else "NO LICENSE"
         bank = request.form.get("bank") if request.form.get("bank") else "NONE"
@@ -139,7 +138,6 @@ def admin():
                 <span style="background:#e0e7ff; color:#3730a3; padding:2px 6px; border-radius:8px; font-size:11px; font-weight:bold; display:inline-block; margin-top:8px;">🔒 SHA-256 NIDA Hash:</span>
                 <span style="background:#fee2e2; color:#991b1b; padding:4px; border-radius:6px; font-size:11px; font-family:monospace; display:block; margin-top:3px;">{p['hash']}</span>
                 
-                <!-- SHOWING THE MULTIPLE LINKED IDENTITIES SECURELY -->
                 <div style="margin-top:10px; background:white; padding:8px; border-radius:6px; border:1px dashed #cbd5e1;">
                     🏥 <strong>NHIF:</strong> {p['nhif']} | 
                     🚗 <strong>License:</strong> {p['license']} | 
@@ -190,3 +188,6 @@ def admin():
         <h2>Admin Authentication</h2>
         {error_msg}
         <form method="POST">
+            <label>Admin Username:</label>
+            <input type="text" name="username" required>
+            <label>Security Password:</label>
