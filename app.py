@@ -22,10 +22,6 @@ def encrypt_identity_data(raw_text):
     return hashlib.sha256(raw_text.encode()).hexdigest()
 
 def execute_live_telecom_charge(phone_number, amount_tzs, target_network):
-    """
-    Dispatches a structured STK Push payload request to the local telecom gateway.
-    This triggers a native system 'Enter PIN' pop-up prompt on the phone screen.
-    """
     formatted_phone = phone_number.strip()
     if formatted_phone.startswith("0"):
         formatted_phone = "255" + formatted_phone[1:]
@@ -119,19 +115,21 @@ def admin():
     if session.get("logged_in"):
         running_total = 0
         ledger_html = ""
-        for p in RECORDS_MEM_POOL:
-            running_total += p["fee"]
-            ledger_html += '<div style="background:#f8fafc; border:1px solid #e2e8f0; padding:15px; border-radius:8px; margin-bottom:15px; font-size:13px; position:relative; word-wrap:break-word;">'
-            ledger_html += '<div style="background:#dcfce7; color:#166534; position:absolute; right:15px; top:15px; padding:4px 8px; border-radius:12px; font-size:11px; font-weight:bold;">PAID +' + str(p['fee']) + ' TZS</div>'
-            ledger_html += '<strong>👤 ' + str(p['name']) + '</strong> <small style="color:#64748b;">(Via ' + str(p['net']) + ')</small><br>'
-            ledger_html += '<span style="background:#e0e7ff; color:#3730a3; padding:2px 6px; border-radius:8px; font-size:11px; font-weight:bold; display:inline-block; margin-top:8px;">🔒 SHA-256 NIDA Hash:</span>'
-            ledger_html += '<span style="background:#fee2e2; color:#991b1b; padding:4px; border-radius:6px; font-size:11px; font-family:monospace; display:block; margin-top:3px;">' + str(p['hash']) + '</span>'
-            ledger_html += '<div style="margin-top:10px; background:white; padding:8px; border-radius:6px; border:1px dashed #cbd5e1;">'
-            ledger_html += '🏥 <strong>NHIF:</strong> ' + str(p['nhif']) + ' | 🚗 <strong>License:</strong> ' + str(p['license']) + ' |  💳 <strong>Bank:</strong> ' + str(p['bank'])
-            ledger_html += '</div>'
-            ledger_html += '<small style="color:#64748b; display:inline-block; margin-top:8px;">Ref ID: ' + str(p['ref']) + ' | Sync Time: ' + str(p['time']) + '</small></div>'
-            
-        if not RECORDS_MEM_POOL:
+        
+        # PROACTING SAFE WRAPPING FOR THE LEDGER MATRIX LOGIC
+        if RECORDS_MEM_POOL:
+            for p in RECORDS_MEM_POOL:
+                running_total += p.get("fee", 0)
+                ledger_html += '<div style="background:#f8fafc; border:1px solid #e2e8f0; padding:15px; border-radius:8px; margin-bottom:15px; font-size:13px; position:relative; word-wrap:break-word;">'
+                ledger_html += '<div style="background:#dcfce7; color:#166534; position:absolute; right:15px; top:15px; padding:4px 8px; border-radius:12px; font-size:11px; font-weight:bold;">PAID +' + str(p.get('fee', 500)) + ' TZS</div>'
+                ledger_html += '<strong>👤 ' + str(p.get('name', 'Unknown')) + '</strong> <small style="color:#64748b;">(Via ' + str(p.get('net', 'M-Pesa')) + ')</small><br>'
+                ledger_html += '<span style="background:#e0e7ff; color:#3730a3; padding:2px 6px; border-radius:8px; font-size:11px; font-weight:bold; display:inline-block; margin-top:8px;">🔒 SHA-256 NIDA Hash:</span>'
+                ledger_html += '<span style="background:#fee2e2; color:#991b1b; padding:4px; border-radius:6px; font-size:11px; font-family:monospace; display:block; margin-top:3px;">' + str(p.get('hash', '')) + '</span>'
+                ledger_html += '<div style="margin-top:10px; background:white; padding:8px; border-radius:6px; border:1px dashed #cbd5e1;">'
+                ledger_html += '🏥 <strong>NHIF:</strong> ' + str(p.get('nhif', 'NONE')) + ' | 🚗 <strong>License:</strong> ' + str(p.get('license', 'NONE')) + ' | 💳 <strong>Bank:</strong> ' + str(p.get('bank', 'NONE'))
+                ledger_html += '</div>'
+                ledger_html += '<small style="color:#64748b; display:inline-block; margin-top:8px;">Ref ID: ' + str(p.get('ref', '')) + ' | Sync Time: ' + str(p.get('time', '')) + '</small></div>'
+        else:
             ledger_html = '<p style="color:#888; text-align:center; margin-top:40px;">No encrypted records stored.</p>'
 
         html_dashboard = "<!DOCTYPE html><html><head><title>MojaID Corporate Dashboard</title>" + BASE_STYLES + "</head><body>"
