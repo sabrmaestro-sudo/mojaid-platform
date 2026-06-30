@@ -49,7 +49,6 @@ def execute_live_telecom_charge(phone_number, amount_tzs, target_network):
     
     try:
         print(f"📡 Sending outbound transaction prompt trigger for {formatted_phone} via {target_network}...")
-        # Simulate successful API response string
         time.sleep(0.3)
         response_data = {"status": "SUCCESS", "telecom_reference": f"TZ{int(time.time())}REF"}
         
@@ -108,10 +107,7 @@ def index():
     html_page += "<label>NHIF Card Number (Optional):</label><input type='text' name='nhif' placeholder='e.g. NHIF-992831'>"
     html_page += "<label>Driving License Class (Optional):</label><input type='text' name='license' placeholder='e.g. A, B, C'>"
     html_page += "<label>Linked Bank Name (Optional):</label><input type='text' name='bank' placeholder='e.g. CRDB'>"
-    
-    # SYSTEM DROPDOWN STACK FULLY INCORPORATING ALL 4 TANZANIAN WALLET CARRIERS
     html_page += "<label>Billing Network Method:</label><select name='network'><option value='M-Pesa'>Vodacom M-Pesa</option><option value='Tigo Pesa'>Tigo Pesa</option><option value='Airtel Money'>Airtel Money</option><option value='HaloPesa'>HaloPesa</option></select>"
-    
     html_page += "<label>Account Phone Number:</label><input type='text' name='phone' placeholder='07XXXXXXXX' required>"
     html_page += "<button type='submit' class='btn-submit'>🔒 Verify & Sync Identity (500 TZS)</button>"
     html_page += "</form></div></body></html>"
@@ -131,7 +127,7 @@ def admin():
             ledger_html += '<span style="background:#e0e7ff; color:#3730a3; padding:2px 6px; border-radius:8px; font-size:11px; font-weight:bold; display:inline-block; margin-top:8px;">🔒 SHA-256 NIDA Hash:</span>'
             ledger_html += '<span style="background:#fee2e2; color:#991b1b; padding:4px; border-radius:6px; font-size:11px; font-family:monospace; display:block; margin-top:3px;">' + str(p['hash']) + '</span>'
             ledger_html += '<div style="margin-top:10px; background:white; padding:8px; border-radius:6px; border:1px dashed #cbd5e1;">'
-            ledger_html += '🏥 <strong>NHIF:</strong> ' + str(p['nhif']) + ' | 🚗 <strong>License:</strong> ' + str(p['license']) + ' | 💳 <strong>Bank:</strong> ' + str(p['bank'])
+            ledger_html += '🏥 <strong>NHIF:</strong> ' + str(p['nhif']) + ' | 🚗 <strong>License:</strong> ' + str(p['license']) + ' |  💳 <strong>Bank:</strong> ' + str(p['bank'])
             ledger_html += '</div>'
             ledger_html += '<small style="color:#64748b; display:inline-block; margin-top:8px;">Ref ID: ' + str(p['ref']) + ' | Sync Time: ' + str(p['time']) + '</small></div>'
             
