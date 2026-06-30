@@ -46,6 +46,11 @@ def index():
         network = request.form.get("network")
         phone = request.form.get("phone")
         
+        # CAPTURING THE MISSING IDENTITIES
+        nhif = request.form.get("nhif") if request.form.get("nhif") else "NOT LINKED"
+        license = request.form.get("license") if request.form.get("license") else "NO LICENSE"
+        bank = request.form.get("bank") if request.form.get("bank") else "NONE"
+        
         encrypted_nida = encrypt_identity_data(nida_id)
         current_time = time.strftime("%H:%M:%S")
         
@@ -65,11 +70,13 @@ def index():
                 "net": network,
                 "fee": 300,
                 "ref": tx_reference,
-                "time": current_time
+                "time": current_time,
+                "nhif": nhif,
+                "license": license,
+                "bank": bank
             })
-            alert_msg = f'<p style="color:#0369a1;background:#e0f2fe;padding:12px;border-radius:8px;font-weight:bold;text-align:center;">¼¾ Payment Cleared via {network}! Ref: {tx_reference}</p>'
+            alert_msg = f'<p style="color:#0369a1;background:#e0f2fe;padding:12px;border-radius:8px;font-weight:bold;text-align:center;">🔔 Payment Cleared via {network}! Ref: {tx_reference}</p>'
 
-    # Clean string composition without style bracket clashing
     html_page = "<!DOCTYPE html><html><head><title>MojaID Wallet</title>" + BASE_STYLES + "</head><body>"
     html_page += """
     <div class="nav-bar" style="max-width:450px;">
@@ -84,16 +91,29 @@ def index():
         <form method="POST">
             <label>Full Name:</label>
             <input type="text" name="full_name" required>
-            <label>Private NIDA ID:</label>
+            
+            <label>Primary NIDA ID:</label>
             <input type="text" name="nida_id" placeholder="199XXXXXXXXXXXX..." required>
+            
+            <label>NHIF Card Number (Optional):</label>
+            <input type="text" name="nhif" placeholder="e.g. NHIF-992831">
+            
+            <label>Driving License Class (Optional):</label>
+            <input type="text" name="license" placeholder="e.g. A, B, C">
+            
+            <label>Linked Bank Name (Optional):</label>
+            <input type="text" name="bank" placeholder="e.g. CRDB">
+            
             <label>Billing Method:</label>
             <select name="network">
                 <option value="M-Pesa">Vodacom M-Pesa</option>
                 <option value="Tigo Pesa">Tigo Pesa</option>
                 <option value="Airtel Money">Airtel Money</option>
             </select>
+            
             <label>Account Phone Number:</label>
             <input type="text" name="phone" placeholder="07XXXXXXXX" required>
+            
             <button type="submit" class="btn-submit">🔒 Verify & Sync Identity (300 TZS)</button>
         </form>
     </div></body></html>
@@ -114,9 +134,18 @@ def admin():
             ledger_html += f"""
             <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:15px; border-radius:8px; margin-bottom:15px; font-size:13px; position:relative; word-wrap:break-word;">
                 <div style="background:#dcfce7; color:#166534; position:absolute; right:15px; top:15px; padding:4px 8px; border-radius:12px; font-size:11px; font-weight:bold;">PAID +{p['fee']} TZS</div>
-                <strong>¼¾ {p['name']}</strong> <small style="color:#64748b;">(Via {p['net']})</small><br><br>
-                <span style="background:#e0e7ff; color:#3730a3; padding:4px 8px; border-radius:12px; font-size:11px; font-weight:bold;">¼  SHA-256 Encrypted NIDA Signature:</span>
-                <span style="background:#fee2e2; color:#991b1b; padding:6px; border-radius:6px; font-size:11px; font-family:monospace; display:block; margin-top:5px;">{p['hash']}</span>
+                <strong>👤 {p['name']}</strong> <small style="color:#64748b;">(Via {p['net']})</small><br>
+                
+                <span style="background:#e0e7ff; color:#3730a3; padding:2px 6px; border-radius:8px; font-size:11px; font-weight:bold; display:inline-block; margin-top:8px;">🔒 SHA-256 NIDA Hash:</span>
+                <span style="background:#fee2e2; color:#991b1b; padding:4px; border-radius:6px; font-size:11px; font-family:monospace; display:block; margin-top:3px;">{p['hash']}</span>
+                
+                <!-- SHOWING THE MULTIPLE LINKED IDENTITIES SECURELY -->
+                <div style="margin-top:10px; background:white; padding:8px; border-radius:6px; border:1px dashed #cbd5e1;">
+                    🏥 <strong>NHIF:</strong> {p['nhif']} | 
+                    🚗 <strong>License:</strong> {p['license']} | 
+                    💳 <strong>Bank:</strong> {p['bank']}
+                </div>
+                
                 <small style="color:#64748b; display:inline-block; margin-top:8px;">Ref ID: {p['ref']} | Sync Time: {p['time']}</small>
             </div>
             """
@@ -153,7 +182,7 @@ def admin():
             session["logged_in"] = True
             return redirect(url_for("admin"))
         else:
-            error_msg = '<p style="color:red;font-weight:bold;text-align:center;">¼  Authentication Rejected: Invalid Credentials.</p>'
+            error_msg = '<p style="color:red;font-weight:bold;text-align:center;">⚠️ Authentication Rejected: Invalid Credentials.</p>'
 
     html_login = "<!DOCTYPE html><html><head><title>MojaID Admin Login</title>" + BASE_STYLES + "</head><body>"
     html_login += f"""
@@ -161,21 +190,3 @@ def admin():
         <h2>Admin Authentication</h2>
         {error_msg}
         <form method="POST">
-            <label>Admin Username:</label>
-            <input type="text" name="username" required>
-            <label>Security Password:</label>
-            <input type="password" name="password" required>
-            <button type="submit" class="btn-submit-admin">🔓 Verify Credentials</button>
-        </form>
-    </div></body></html>
-    """
-    return html_login
-
-@app.route("/logout")
-def logout():
-    session.clear()
-    return redirect(url_for("index"))
-
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
