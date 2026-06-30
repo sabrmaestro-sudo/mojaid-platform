@@ -74,7 +74,7 @@ def index():
                 "license": license,
                 "bank": bank
             })
-            alert_msg = f'<p style="color:#0369a1;background:#e0f2fe;padding:12px;border-radius:8px;font-weight:bold;text-align:center;">🔔 Payment Cleared via {network}! Ref: {tx_reference}</p>'
+            alert_msg = '<p style="color:#0369a1;background:#e0f2fe;padding:12px;border-radius:8px;font-weight:bold;text-align:center;">🔍 Payment Cleared via ' + str(network) + '! Ref: ' + str(tx_reference) + '</p>'
 
     html_page = "<!DOCTYPE html><html><head><title>MojaID Wallet</title>" + BASE_STYLES + "</head><body>"
     html_page += """
@@ -130,23 +130,15 @@ def admin():
         
         for p in RECORDS_MEM_POOL:
             running_total += p["fee"]
-            ledger_html += f"""
-            <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:15px; border-radius:8px; margin-bottom:15px; font-size:13px; position:relative; word-wrap:break-word;">
-                <div style="background:#dcfce7; color:#166534; position:absolute; right:15px; top:15px; padding:4px 8px; border-radius:12px; font-size:11px; font-weight:bold;">PAID +{p['fee']} TZS</div>
-                <strong>👤 {p['name']}</strong> <small style="color:#64748b;">(Via {p['net']})</small><br>
-                
-                <span style="background:#e0e7ff; color:#3730a3; padding:2px 6px; border-radius:8px; font-size:11px; font-weight:bold; display:inline-block; margin-top:8px;">🔒 SHA-256 NIDA Hash:</span>
-                <span style="background:#fee2e2; color:#991b1b; padding:4px; border-radius:6px; font-size:11px; font-family:monospace; display:block; margin-top:3px;">{p['hash']}</span>
-                
-                <div style="margin-top:10px; background:white; padding:8px; border-radius:6px; border:1px dashed #cbd5e1;">
-                    🏥 <strong>NHIF:</strong> {p['nhif']} | 
-                    🚗 <strong>License:</strong> {p['license']} | 
-                    💳 <strong>Bank:</strong> {p['bank']}
-                </div>
-                
-                <small style="color:#64748b; display:inline-block; margin-top:8px;">Ref ID: {p['ref']} | Sync Time: {p['time']}</small>
-            </div>
-            """
+            ledger_html += '<div style="background:#f8fafc; border:1px solid #e2e8f0; padding:15px; border-radius:8px; margin-bottom:15px; font-size:13px; position:relative; word-wrap:break-word;">'
+            ledger_html += '<div style="background:#dcfce7; color:#166534; position:absolute; right:15px; top:15px; padding:4px 8px; border-radius:12px; font-size:11px; font-weight:bold;">PAID +' + str(p['fee']) + ' TZS</div>'
+            ledger_html += '<strong>👤 ' + str(p['name']) + '</strong> <small style="color:#64748b;">(Via ' + str(p['net']) + ')</small><br>'
+            ledger_html += '<span style="background:#e0e7ff; color:#3730a3; padding:2px 6px; border-radius:8px; font-size:11px; font-weight:bold; display:inline-block; margin-top:8px;">🔒 SHA-256 NIDA Hash:</span>'
+            ledger_html += '<span style="background:#fee2e2; color:#991b1b; padding:4px; border-radius:6px; font-size:11px; font-family:monospace; display:block; margin-top:3px;">' + str(p['hash']) + '</span>'
+            ledger_html += '<div style="margin-top:10px; background:white; padding:8px; border-radius:6px; border:1px dashed #cbd5e1;">'
+            ledger_html += '🏥 <strong>NHIF:</strong> ' + str(p['nhif']) + ' | 🚗 <strong>License:</strong> ' + str(p['license']) + ' | 💳 <strong>Bank:</strong> ' + str(p['bank'])
+            ledger_html += '</div>'
+            ledger_html += '<small style="color:#64748b; display:inline-block; margin-top:8px;">Ref ID: ' + str(p['ref']) + ' | Sync Time: ' + str(p['time']) + '</small></div>'
             
         if not RECORDS_MEM_POOL:
             ledger_html = '<p style="color:#888; text-align:center; margin-top:40px;">No encrypted records stored.</p>'
@@ -160,11 +152,11 @@ def admin():
         <div class="container">
             <div class="admin-card">
         """
-        html_dashboard += f"<h2>🔒 Encrypted Financial Ledger ({len(RECORDS_MEM_POOL)})</h2><div style='max-height:450px; overflow-y:auto;'>" + ledger_html + "</div></div>"
-        html_dashboard += f"""
+        html_dashboard += "<h2>🔒 Encrypted Financial Ledger (" + str(len(RECORDS_MEM_POOL)) + ")</h2><div style='max-height:450px; overflow-y:auto;'>" + ledger_html + "</div></div>"
+        html_dashboard += """
             <div class="admin-card" style="text-align:center; display:flex; flex-direction:column; justify-content:center; align-items:center;">
                 <h2>Platform Net Revenue</h2>
-                <div style="font-size:42px; font-weight:bold; color:#16a34a; margin:20px 0;">{running_total:,} TZS</div>
+                <div style="font-size:42px; font-weight:bold; color:#16a34a; margin:20px 0;">""" + f"{running_total:,}" + """ TZS</div>
                 <p style="color:#64748b; font-size:13px; max-width:200px;">This financial metrics stream is completely invisible to public consumers.</p>
             </div>
         </div></body></html>
@@ -183,11 +175,10 @@ def admin():
             error_msg = '<p style="color:red;font-weight:bold;text-align:center;">⚠️ Authentication Rejected: Invalid Credentials.</p>'
 
     html_login = "<!DOCTYPE html><html><head><title>MojaID Admin Login</title>" + BASE_STYLES + "</head><body>"
-    html_login += f"""
+    html_login += """
     <div class="card" style="margin-top: 80px;">
         <h2>Admin Authentication</h2>
-        {error_msg}
+    """
+    html_login += error_msg
+    html_login += """
         <form method="POST">
-            <label>Admin Username:</label>
-            <input type="text" name="username" required>
-            <label>Security Password:</label>
