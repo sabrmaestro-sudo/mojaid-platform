@@ -10,7 +10,7 @@ app.secret_key = os.environ.get("SECRET_KEY", "prod_mojaid_security_layer_99213"
 ADMIN_USERNAME = "admin"
 ADMIN_PASSWORD_HASH = hashlib.sha256("MojaID2026!#".encode()).hexdigest()
 
-# MEMORY REVENUE TRACKING POOL
+# MEMORY REVENUE TRACKING POOL - 100% isolated from hard drive path crashes
 RECORDS_MEM_POOL = []
 
 def encrypt_identity_data(raw_text):
@@ -30,12 +30,6 @@ def execute_live_telecom_charge(phone_number, amount_tzs, target_network):
         "reference": unique_merchant_ref,
         "currency": "TZS",
         "remarks": "MojaID Identity Verification Fee"
-    }
-    
-    headers = {
-        "Authorization": f"Bearer {os.environ.get('GATEWAY_SECRET_KEY', 'MOCK_SECRET_KEY_ABC')}",
-        "Content-Type": "application/json",
-        "X-Merchant-Key": os.environ.get('GATEWAY_PUBLIC_KEY', 'MOCK_PUBLIC_KEY_XYZ')
     }
     
     try:
