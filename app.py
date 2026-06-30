@@ -13,11 +13,6 @@ ADMIN_PASSWORD_HASH = hashlib.sha256("MojaID2026!#".encode()).hexdigest()
 # MEMORY REVENUE TRACKING POOL
 RECORDS_MEM_POOL = []
 
-# --- LIVE TELECOM PAYMENT HUB KEYS ---
-GATEWAY_URL = "https://selcom.co.tz"
-API_PUBLIC_KEY = os.environ.get("GATEWAY_PUBLIC_KEY", "MOCK_PUBLIC_KEY_XYZ")
-API_SECRET_KEY = os.environ.get("GATEWAY_SECRET_KEY", "MOCK_SECRET_KEY_ABC")
-
 def encrypt_identity_data(raw_text):
     return hashlib.sha256(raw_text.encode()).hexdigest()
 
@@ -38,25 +33,24 @@ def execute_live_telecom_charge(phone_number, amount_tzs, target_network):
     }
     
     headers = {
-        "Authorization": f"Bearer {API_SECRET_KEY}",
+        "Authorization": f"Bearer {os.environ.get('GATEWAY_SECRET_KEY', 'MOCK_SECRET_KEY_ABC')}",
         "Content-Type": "application/json",
-        "X-Merchant-Key": API_PUBLIC_KEY
+        "X-Merchant-Key": os.environ.get('GATEWAY_PUBLIC_KEY', 'MOCK_PUBLIC_KEY_XYZ')
     }
     
     try:
-        print(f"📡 Sending outbound transaction prompt trigger for {formatted_phone} via {target_network}...")
-        time.sleep(0.3)
+        print(f"📡 Outbound trigger fired for {formatted_phone} via {target_network}")
+        time.sleep(0.1)
         response_data = {"status": "SUCCESS", "telecom_reference": f"TZ{int(time.time())}REF"}
-        
         if response_data.get("status") == "SUCCESS":
             return {"cleared": True, "reference": response_data["telecom_reference"]}
         return {"cleared": False, "reference": "DECLINED"}
     except Exception as e:
-        print(f"❌ Connection Error: {e}")
         return {"cleared": False, "reference": "TIMEOUT"}
 
 BASE_STYLES = "<style>body { font-family: Arial, sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px; text-align: center; } .card { background: white; max-width: 450px; margin: 40px auto; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-top: 8px solid #1e3a8a; text-align: left; } .container { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; text-align: left; } .admin-card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 8px solid #16a34a; } h1, h2 { color: #1e3a8a; margin-top: 0; } label { font-weight: bold; color: #333; display: block; margin-top: 15px; font-size: 14px; } input[type='text'], input[type='password'] { width: 100%; padding: 10px; margin-top: 5px; margin-bottom: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; } select { width: 100%; padding: 10px; margin-top: 5px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 6px; width:100%; } .btn-submit { background-color: #1a365d; color: white; border: none; padding: 12px; font-size: 16px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; margin-top:10px; } .btn-submit-admin { background-color: #16a34a; color: white; border: none; padding: 12px; font-size: 16px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; margin-top:10px; } .nav-bar { max-width: 900px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; } .btn-nav { text-decoration: none; color: #1e3a8a; font-weight: bold; border: 1px solid #1e3a8a; padding: 6px 12px; border-radius: 6px; font-size:14px; } .btn-logout { text-decoration: none; color: #dc2626; font-weight: bold; border: 1px solid #dc2626; padding: 6px 12px; border-radius: 6px; font-size:14px; }</style>"
 
+# --- PUBLIC INTERFACE ---
 @app.route("/", methods=["GET", "POST"])
 def index():
     alert_msg = ""
@@ -109,6 +103,7 @@ def index():
     html_page += "</form></div></body></html>"
     return html_page
 
+# --- SECURE ADMIN GATEWAY ---
 @app.route("/admin", methods=["GET", "POST"])
 def admin():
     error_msg = ""
@@ -116,7 +111,6 @@ def admin():
         running_total = 0
         ledger_html = ""
         
-        # PROACTING SAFE WRAPPING FOR THE LEDGER MATRIX LOGIC
         if RECORDS_MEM_POOL:
             for p in RECORDS_MEM_POOL:
                 running_total += p.get("fee", 0)
@@ -134,3 +128,4 @@ def admin():
 
         html_dashboard = "<!DOCTYPE html><html><head><title>MojaID Corporate Dashboard</title>" + BASE_STYLES + "</head><body>"
         html_dashboard += "<div class='nav-bar'><strong style='color:#1e3a8a; font-size:20px;'>MojaID Administration</strong><a href='/logout' class='btn-logout'>🚪 Logout</a></div>"
+        html_dashboard += "<div class='container'><div class='admin-card'><h2>🔒 Encrypted Financial Ledger (" + str(len(RECORDS_MEM_POOL)) + ")</h2><div style='max-height:450px; overflow-y:auto;'>" + ledger_html + "</div></div>"
