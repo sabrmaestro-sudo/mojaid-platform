@@ -42,7 +42,7 @@
         .alert-box { background: rgba(59, 130, 246, 0.1); color: #93c5fd; padding: 16px 20px; border-radius: 14px; margin-bottom: 30px; border: 1px solid rgba(59, 130, 246, 0.2); font-size: 14px; font-weight: 600; border-left: 5px solid var(--neon-blue); text-align: left; }
         .error-msg { background: rgba(239, 68, 68, 0.1); color: #fca5a5; padding: 16px 20px; border-radius: 14px; margin-bottom: 30px; border: 1px solid rgba(239, 68, 68, 0.2); font-size: 14px; font-weight: 600; border-left: 5px solid #ef4444; text-align: left; }
         
-        /* PREMIUM FINTECH DIGITAL ACCESS IDENTIFICATION PASS WRAPPER */
+        /* 📱 PREMIUM RECTANGULAR FINTECH ID IDENTITY LABELS CARD COMPONENT */
         .digital-pass-card { background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%); padding: 30px; border-radius: 20px; border: 1px solid rgba(56, 189, 248, 0.25); text-align: center; margin-bottom: 35px; box-shadow: 0 20px 45px rgba(0,0,0,0.5); position: relative; overflow: hidden; }
         .digital-pass-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #3b82f6, #06b6d4, #10b981); }
         .pass-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 12px; margin-bottom: 20px; }
@@ -50,54 +50,16 @@
         .pass-brand span { color: var(--cyan-glow); }
         .pass-label { font-size: 10px; font-weight: 700; color: #34d399; background: rgba(16, 185, 129, 0.1); padding: 3px 8px; border-radius: 10px; border: 1px solid rgba(16, 185, 129, 0.15); letter-spacing: 0.5px; text-transform: uppercase; }
         
-        /* 🔳 UNIVERSAL SCANNABLE MATRIX BOX STRUCTURE USING PURE NATIVE HTML CODE EXTENSIONS */
-        .universal-qr-matrix-box {
-            background: #ffffff;
-            padding: 22px;
-            display: inline-block;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-            margin: 10px auto;
+        /* 🔳 BRIGHT HIGH-CONTRAST SCANNABLE MATRIX BOX AREA */
+        .qr-frame-wrapper { 
+            background: #ffffff; 
+            padding: 20px; 
+            display: inline-block; 
+            border-radius: 12px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4); 
+            margin: 10px auto; 
         }
-        /* Draws a high-fidelity mock operational pixel matrix grid cleanly using standard CSS styles */
-        .matrix-grid-pattern {
-            width: 170px;
-            height: 170px;
-            background-color: #ffffff;
-            background-image: 
-                radial-gradient(#030712 25%, transparent 25%), 
-                radial-gradient(#030712 25%, transparent 25%);
-            background-size: 14px 14px;
-            background-position: 0 0, 7px 7px;
-            position: relative;
-            border: 4px solid #030712;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        /* Draws the distinctive scannable rectangular target alignment boxes in the corners universally */
-        .matrix-grid-pattern::before {
-            content: '';
-            position: absolute;
-            top: 6px; left: 6px; width: 42px; height: 42px;
-            border: 10px solid #030712;
-            background: #ffffff;
-            box-sizing: border-box;
-        }
-        .matrix-grid-pattern::after {
-            content: '';
-            position: absolute;
-            bottom: 6px; left: 6px; width: 42px; height: 42px;
-            border: 10px solid #030712;
-            background: #ffffff;
-            box-sizing: border-box;
-        }
-        .right-top-target {
-            position: absolute;
-            top: 6px; right: 6px; width: 42px; height: 42px;
-            border: 10px solid #030712;
-            background: #ffffff;
-            box-sizing: border-box;
-        }
+        .qr-frame-wrapper img { display: block; width: 180px; height: 180px; border-radius: 4px; }
         .pass-footer-meta { font-family: monospace; font-size: 11px; color: var(--text-secondary); margin-top: 15px; letter-spacing: 0.5px; }
     </style>
 </head>
@@ -108,18 +70,16 @@
             <div class="secure-badge">🛡️ E2EE Protocol Secure</div>
         </div>
         
-        <!-- UNIVERSAL RENDERING PASSPORT BLOCK -->
+        <!-- UNIVERSAL SCANNABLE GENERATION COMPONENT NODE -->
         {% if qr_data %}
             <div class="digital-pass-card">
                 <div class="pass-header">
                     <div class="pass-brand">MOJA<span>ID</span> SECURE WALLET</div>
                     <div class="pass-label">● ACTIVE TOKEN</div>
                 </div>
-                <div class="universal-qr-matrix-box">
-                    <!-- Pure native HTML/CSS matrix layout box structure—100% immune to cloud network blocks -->
-                    <div class="matrix-grid-pattern">
-                        <div class="right-top-target"></div>
-                    </div>
+                <div class="qr-frame-wrapper">
+                    <!-- High-End Cloud Router instantly displays a scannable pixel grid image -->
+                    <img src="https://qrserver.com{{ qr_data }}&color=030712&bgcolor=ffffff" alt="Scannable MojaID Token Passed ID">
                 </div>
                 <div class="pass-footer-meta">
                     <div>SECURE ID REFERENCE SIGNATURE</div>
@@ -152,3 +112,11 @@
                         <option value="HaloPesa">HaloPesa</option>
                     </select>
                 </div>
+                <div><label>Account Phone Msisdn</label><input type='text' name='phone' placeholder='e.g., 07XXXXXXXX' required></div>
+                
+                <div class="span-2"><button type="submit" class="btn-action">🔒 Compile & Securely Link (500 TZS)</button></div>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
