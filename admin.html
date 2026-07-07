@@ -41,8 +41,8 @@
         .node-hash { background: rgba(6, 182, 212, 0.04); color: #22d3ee; padding: 10px; border-radius: 8px; font-family: monospace; font-size: 11px; margin-top: 8px; display: block; border: 1px solid rgba(6, 182, 212, 0.08); word-break: break-all; }
         .grid-bundles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 15px; font-size: 12px; color: var(--text-secondary); background: rgba(0,0,0,0.2); padding: 12px; border-radius: 10px; border: 1px solid var(--border-spec); }
         .grid-bundles strong { color: var(--text-primary); display: block; margin-bottom: 2px; }
-        .api-btn { background: #06b6d4; color: black; border: none; padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; text-transform: uppercase; margin-top: 15px; display: inline-block; transition: background 0.2s; }
-        .api-btn:hover { background: #22d3ee; }
+        .api-link-btn { background: #06b6d4; color: black; text-decoration: none; padding: 10px 16px; border-radius: 8px; font-size: 12px; font-weight: 700; text-transform: uppercase; margin-top: 15px; display: inline-block; transition: background 0.2s; }
+        .api-link-btn:hover { background: #22d3ee; }
         @keyframes beacon { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.3); opacity: 0.5; } }
     </style>
 </head>
@@ -72,7 +72,7 @@
         </div>
 
         <div class="main-layout">
-            <div class="data-panel">
+            <div class="data-panel" style="grid-column: span 2;">
                 <h2>📊 Central Transaction Records Pipeline</h2>
                 <div class="ledger-box">
                     {% if total_count == 0 %}
@@ -92,47 +92,16 @@
                                 <div><strong>💳 Banking Unit</strong> {{ p.bank }}</div>
                             </div>
                             
-                            <!-- ACTIONS FOOTER PANEL -->
-                            <div style="display: flex; gap: 12px;">
-                                <button class="api-btn" onclick="runAutomatedApiTest('{{ p.hash }}', false)">🛡️ Test Secure Lock Gate</button>
-                                <button class="api-btn" style="background:#10b981;" onclick="runAutomatedApiTest('{{ p.hash }}', true)">A_  Test Data Payout</button>
+                            <!-- 🚀 NATIVE HYPERLINKS BYPASSING JAVASCRIPT COMPLETELY -->
+                            <div style="display: flex; gap: 15px; margin-top: 5px;">
+                                <a href="/api/v1/verify?qr_hash={{ p.hash }}" target="_blank" class="api-link-btn">🛡️ Test Secure Lock Gate</a>
+                                <a href="/api/v1/verify?qr_hash={{ p.hash }}&X-MojaID-Auth=mojaid_live_b2b_token_xyz789" target="_blank" class="api-link-btn" style="background:#10b981;">🔓 Test Data Payout</a>
                             </div>
                         </div>
                     {% endfor %}
                 </div>
             </div>
-
-            <div class="data-panel" style="background: radial-gradient(circle at bottom right, rgba(6, 182, 212, 0.05), transparent 70%), var(--panel-blur); align-self: start;">
-                <h2>⚙️ Network Parameters</h2>
-                <p style="font-size:13px; color:var(--text-secondary); line-height:1.6; margin:0 0 15px 0;">This corporate operating node monitors active cryptographic pipelines across all local telecoms [context]. Data access is restricted to verified administrators.</p>
-                <div style="font-size:12px; font-family:monospace; background:rgba(0,0,0,0.3); padding:15px; border-radius:10px; border:1px solid var(--border-spec); color:#a5f3fc; word-wrap: break-word;">
-                    CLUSTER: tz-east-01<br>
-                    DATABASE: mem_pool_v3<br>
-                    ENCRYPTION: sha256_e2ee<br><br>
-                    <strong style="color:white; display:block; margin-bottom:5px;">📡 LIVE API RESPONSE STREAM:</strong>
-                    <pre id="api-output-box" style="margin:0; white-space: pre-wrap; color:#34d399; font-family: monospace;">Click an execution button on a data row to call the live API module endpoint stream...</pre>
-                </div>
-            </div>
         </div>
     </div>
-
-    <!-- DYNAMIC ENDPOINT DISPATCHER ENGINE -->
-    <script>
-        function runAutomatedApiTest(hashString, passToken) {
-            const hostRoot = window.location.origin;
-            let targetUrl = hostRoot + "/api/v1/verify?qr_hash=" + hashString;
-            
-            if (passToken) {
-                targetUrl += "&X-MojaID-Auth=mojaid_live_b2b_token_xyz789";
-            }
-            
-            document.getElementById("api-output-box").innerText = "Dispatching HTTP background request packet to: " + targetUrl + "...";
-            
-            fetch(targetUrl)
-                .then(function(response) {
-                    return response.json().then(function(data) {
-                        return { status: response.status, body: data };
-                    });
-                })
-                .then(function(res) {
-                    const outputElement = document.getElementById("api-output-box");
+</body>
+</html>
