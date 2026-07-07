@@ -1,24 +1,31 @@
 import time
 import hashlib
 import os
-from flask import Flask, request, render_template
+import random
+from flask import Flask, request, render_template, jsonify
 
 app = Flask(__name__, template_folder='.')
 app.secret_key = os.environ.get("SECRET_KEY", "prod_mojaid_security_layer_99213")
 
-# PRE-POPULATED PRODUCTION MEMORY POOL (Gives your dashboard instant operational scale)
+# HIGH-VOLUME TRANSACTION ENGINE CACHE POOL
 RECORDS_MEM_POOL = [
     {
         "name": "Baraka Minshemi", 
         "hash": "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92", 
-        "net": "Vodacom M-Pesa", "fee": 500, "ref": "TX17684011MZ", "time": "11:24:05",
-        "nhif": "NHIF-488219", "license": "Class A, B", "bank": "NMB Bank"
+        "net": "Vodacom M-Pesa", "fee": 500, "ref": "TX17684011MZ", "time": "18:24:05",
+        "nhif": "NHIF-488219", "license": "Class A, B", "bank": "NMB Bank", "status": "Active"
     },
     {
         "name": "Fatma Said", 
         "hash": "4a821eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923abc8d11", 
-        "net": "Tigo Pesa", "fee": 500, "ref": "TX17684299MZ", "time": "14:15:32",
-        "nhif": "NOT LINKED", "license": "Class B", "bank": "CRDB Bank"
+        "net": "Tigo Pesa", "fee": 500, "ref": "TX17684299MZ", "time": "18:15:32",
+        "nhif": "NOT LINKED", "license": "Class B", "bank": "CRDB Bank", "status": "Active"
+    },
+    {
+        "name": "Hamisi Juma", 
+        "hash": "cf6c928d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923a", 
+        "net": "Airtel Money", "fee": 500, "ref": "TX17683110MZ", "time": "17:44:12",
+        "nhif": "NHIF-900124", "license": "NO LICENSE", "bank": "Exim Bank", "status": "Suspended"
     }
 ]
 
@@ -50,14 +57,15 @@ def index():
                 break
                 
         if duplicate_found:
-            error_msg = "⚠️ Profile fingerprint already verified inside network system."
+            error_msg = "⚠️ Identity signature overlap detected. Sync execution rejected."
         else:
             tx_reference = f"TX{int(time.time())}MZ"
             RECORDS_MEM_POOL.insert(0, {
                 "name": full_name, "hash": encrypted_nida, "net": network, "fee": 500,
-                "ref": tx_reference, "time": current_time, "nhif": nhif, "license": license, "bank": bank
+                "ref": tx_reference, "time": current_time, "nhif": nhif, "license": license, "bank": bank,
+                "status": "Active"
             })
-            alert_msg = f"📡 Outbound Request Sent! Check your phone for the payment PIN pop-up to authorize 500 TZS via {network}. Ref: {tx_reference}"
+            alert_msg = f"📡 Pipeline connection initialized over {network} gateway infrastructure node. Security challenge token dispatched. Ref: {tx_reference}"
 
     return render_template("index.html", alert_msg=alert_msg, error_msg=error_msg)
 
