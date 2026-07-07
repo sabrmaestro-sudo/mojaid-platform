@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MojaID | Distributed Identity Aggregator</title>
-    <!-- Load the global QR Code JavaScript Compiler Engine -->
-    <script src="https://cloudflare.com"></script>
     <style>
         :root {
             --bg-dark: #030712;
@@ -44,7 +42,7 @@
         .alert-box { background: rgba(59, 130, 246, 0.1); color: #93c5fd; padding: 16px 20px; border-radius: 14px; margin-bottom: 30px; border: 1px solid rgba(59, 130, 246, 0.2); font-size: 14px; font-weight: 600; border-left: 5px solid var(--neon-blue); text-align: left; }
         .error-msg { background: rgba(239, 68, 68, 0.1); color: #fca5a5; padding: 16px 20px; border-radius: 14px; margin-bottom: 30px; border: 1px solid rgba(239, 68, 68, 0.2); font-size: 14px; font-weight: 600; border-left: 5px solid #ef4444; text-align: left; }
         
-        /* 📱 RECTANGULAR SECURE DIGITAL PASS CARD LAYOUT */
+        /* 📱 PREMIUM RECTANGULAR FINTECH ID IDENTITY LABELS CARD COMPONENT */
         .digital-pass-card { background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%); padding: 30px; border-radius: 20px; border: 1px solid rgba(56, 189, 248, 0.25); text-align: center; margin-bottom: 35px; box-shadow: 0 20px 45px rgba(0,0,0,0.5); position: relative; overflow: hidden; }
         .digital-pass-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #3b82f6, #06b6d4, #10b981); }
         .pass-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 12px; margin-bottom: 20px; }
@@ -52,16 +50,16 @@
         .pass-brand span { color: var(--cyan-glow); }
         .pass-label { font-size: 10px; font-weight: 700; color: #34d399; background: rgba(16, 185, 129, 0.1); padding: 3px 8px; border-radius: 10px; border: 1px solid rgba(16, 185, 129, 0.15); letter-spacing: 0.5px; text-transform: uppercase; }
         
-        /* 🔲 THE SCANNABLE CONTRAST CONTRAST WRAPPER (Wiped out scanning blindness) */
+        /* 🔳 BRIGHT HIGH-CONTRAST SCANNABLE MATRIX BOX AREA */
         .qr-frame-wrapper { 
             background: #ffffff; 
-            padding: 24px; /* Creates the standard high-contrast quiet margin area */
+            padding: 20px; 
             display: inline-block; 
             border-radius: 12px; 
             box-shadow: 0 10px 25px rgba(0,0,0,0.4); 
             margin: 10px auto; 
         }
-        #qrcode img, #qrcode canvas { border-radius: 2px !important; display: block; margin: 0 auto; }
+        .qr-frame-wrapper img { display: block; width: 180px; height: 180px; border-radius: 4px; }
         .pass-footer-meta { font-family: monospace; font-size: 11px; color: var(--text-secondary); margin-top: 15px; letter-spacing: 0.5px; }
     </style>
 </head>
@@ -72,7 +70,7 @@
             <div class="secure-badge">🛡️ E2EE Protocol Secure</div>
         </div>
         
-        <!-- RENDERING THE COMPACT RECTANGULAR IDENTITY TICKET -->
+        <!-- UNIVERSAL SCANNABLE GENERATION COMPONENT NODE -->
         {% if qr_data %}
             <div class="digital-pass-card">
                 <div class="pass-header">
@@ -80,25 +78,14 @@
                     <div class="pass-label">● ACTIVE TOKEN</div>
                 </div>
                 <div class="qr-frame-wrapper">
-                    <div id="qrcode"></div>
+                    <!-- High-End Cloud Router instantly displays a scannable pixel grid image -->
+                    <img src="https://qrserver.com{{ qr_data }}&color=030712&bgcolor=ffffff" alt="Scannable MojaID Token Passed ID">
                 </div>
                 <div class="pass-footer-meta">
                     <div>SECURE ID REFERENCE SIGNATURE</div>
                     <div style="color: var(--cyan-glow); margin-top: 4px; word-break: break-all;">FINGERPRINT: {{ qr_data[:28] }}...</div>
                 </div>
             </div>
-            
-            <script>
-                // Clears out the container completely before drawing a pristine matrix square
-                document.getElementById("qrcode").innerHTML = "";
-                new QRCode(document.getElementById("qrcode"), {
-                    text: "{{ qr_data }}",
-                    width: 180,
-                    height: 180,
-                    colorDark : "#030712",
-                    colorLight : "#ffffff"
-                });
-            </script>
         {% endif %}
 
         {% if alert_msg %}<div class="alert-box">{{ alert_msg }}</div>{% endif %}
