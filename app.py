@@ -84,15 +84,24 @@ def index():
 
     return render_template("index.html", alert_msg=alert_msg, error_msg=error_msg, qr_data=qr_data)
 
-# --- 🔌 THE PRODUCTION B2B API CONNECTION POINT ---
+# --- 🏥 ACCREDITED INSTITUTION TERMINAL PORTAL ROUTE ---
+@app.route("/terminal")
+def terminal_portal():
+    """
+    Displays the external terminal screen used by accredited hospitals 
+    and financial institutions to process and verify MojaID QR codes.
+    """
+    return render_template("terminal.html")
+
+# --- 🔌 THE PRODUCTION B2B API CONNECTION POINT (UPDATED FOR INTERACTIVE SIMULATION) ---
 @app.route("/api/v1/verify", methods=["GET"])
 def b2b_verify_api():
     """
     Secure machine-to-machine API endpoint.
     Hospitals and Banks send a background request here with the scanned QR Hash string.
     """
-    # 1. Authenticate that the request is coming from an authorized hospital/bank computer
-    client_auth_token = request.headers.get("X-MojaID-Auth")
+    # 1. Authenticate check: Allow checking from headers OR URL parameter for easy testing
+    client_auth_token = request.headers.get("X-MojaID-Auth") or request.args.get("auth_token")
     if client_auth_token != B2B_API_TOKEN:
         return jsonify({"status": "ERROR", "message": "Authentication Failed: Invalid API Token"}), 401
         
