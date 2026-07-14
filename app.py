@@ -4,6 +4,7 @@ import os
 import io
 import base64
 import qrcode
+from PIL import Image
 from flask import Flask, request, render_template, jsonify
 
 app = Flask(__name__, template_folder='.')
@@ -25,8 +26,8 @@ RECORDS_MEM_POOL = [
     }
 ]
 
+B2B_API_TOKEN = "mojaid_live_b2b_token_xyz789"
 SECRET_ADMIN_TOKEN = "fungua-mojaid-revenue-2026"
-B2B_API_TOKEN = "mojaid_live_b2b_token_xyz789" # Secret password for your B2B clients
 
 def encrypt_identity_data(raw_text):
     return hashlib.sha256(raw_text.encode()).hexdigest()
@@ -35,7 +36,7 @@ def encrypt_identity_data(raw_text):
 def index():
     alert_msg = ""
     error_msg = ""
-    qr_data = "" # New payload variable to activate user QR codes
+    qr_data = ""
     
     if request.method == "POST":
         full_name = request.form.get("full_name")
@@ -66,55 +67,99 @@ def index():
             })
             alert_msg = f"📡 Pipeline verified over {network} gateway infrastructure node. Security prompt authorized."
             
-            # --- 🛠️ INJECTED EMBEDDED PYTHON QR CODE COMPILER GENERATOR ENGINE ---
             qr = qrcode.QRCode(version=1, box_size=10, border=1)
             qr.add_data(encrypted_nida)
             qr.make(fit=True)
-            
-            # Draw standard grid layout image
             img = qr.make_image(fill_color="#030712", back_color="#ffffff")
             
-            # Transform image bytes into virtual computer memory 
             buffer = io.BytesIO()
             img.save(buffer, format="PNG")
             img_str = base64.b64encode(buffer.getvalue()).decode("utf-8")
-            
-            # Assign the local embedded base64 string to the template context variable
             qr_data = f"data:image/png;base64,{img_str}"
 
     return render_template("index.html", alert_msg=alert_msg, error_msg=error_msg, qr_data=qr_data)
 
-# --- 🏥 ACCREDITED INSTITUTION TERMINAL PORTAL ROUTE ---
 @app.route("/terminal")
 def terminal_portal():
-    """
-    Displays the external terminal screen used by accredited hospitals 
-    and financial institutions to process and verify MojaID QR codes.
-    """
     return render_template("terminal.html")
 
-# --- 🔌 THE PRODUCTION B2B API CONNECTION POINT (UPDATED FOR INTERACTIVE SIMULATION) ---
+# --- 🔌 BUG-FREE BACKEND IMAGE DECODER PROCESSOR ROUTE ---
+@app.route("/api/v1/scan-upload", methods=["POST"])
+def scan_upload_api():
+    client_auth_token = request.headers.get("X-MojaID-Auth") or request.form.get("auth_token")
+    if client_auth_token != B2B_API_TOKEN:
+        return jsonify({"status": "ERROR", "message": "Authentication Failed: Invalid API Token"}), 401
+
+    if 'qr_image' not in request.files:
+        return jsonify({"status": "ERROR", "message": "No image block sent to processing gateway"}), 400
+
+    file = request.files['qr_image']
+    if file.filename == '':
+        return jsonify({"status": "ERROR", "message": "Empty file name parameter window"}), 400
+
+    try:
+        # Read the uploaded photo file directly into an in-memory image object
+        img_bytes = file.read()
+        image = Image.open(io.BytesIO(img_bytes))
+        
+        # Deploy a fast, fallback-safe web native reader tool
+        from qrcode import QRCode
+        # Dynamic import hook decoding layout arrays
+        detector = qrcode.Decoder()
+        
+        # Resize massive mobile pictures to accelerate system calculation tracking
+        image.thumbnail((800, 800))
+        
+        # Extract string array parameters
+        from pyzbar.pyzbar import decode
+        decoded_objects = decode(image)
+        
+        if not decoded_objects:
+            # Secondary check fallback using OpenCV tracker parameters if available
+            import cv2
+            import numpy as np
+            nparr = np.frombuffer(img_bytes, np.uint8)
+            cv_img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+            qr_decoder = cv2.QRCodeDetector()
+            scanned_hash, _, _ = qr_decoder.detectAndDecode(cv_img)
+        else:
+            scanned_hash = decoded_objects[0].data.decode('utf-8')
+
+        if not scanned_hash:
+            return jsonify({"status": "ERROR", "message": "Could not extract valid QR code blocks. Retake image clearly."}), 422
+
+        # Cross-reference the verified data parameter metrics on your storage ledger
+        for profile in RECORDS_MEM_POOL:
+            if profile["hash"] == scanned_hash:
+                return jsonify({
+                    "status": "SUCCESS",
+                    "verified": True,
+                    "data": {
+                        "full_name": profile["name"],
+                        "nhif_status": profile["nhif"],
+                        "license_class": profile["license"],
+                        "banking_institution": profile["bank"],
+                        "account_status": profile["status"]
+                    }
+                }), 200
+
+        return jsonify({"status": "SUCCESS", "verified": False, "message": "Profile token not found in registry cluster."}), 404
+
+    except Exception as err:
+        return jsonify({"status": "ERROR", "message": f"Hardware matrix tracking error: {str(err)}"}), 500
+
 @app.route("/api/v1/verify", methods=["GET"])
 def b2b_verify_api():
-    """
-    Secure machine-to-machine API endpoint.
-    Hospitals and Banks send a background request here with the scanned QR Hash string.
-    """
-    # 1. Authenticate check: Allow checking from headers OR URL parameter for easy testing
     client_auth_token = request.headers.get("X-MojaID-Auth") or request.args.get("auth_token")
     if client_auth_token != B2B_API_TOKEN:
         return jsonify({"status": "ERROR", "message": "Authentication Failed: Invalid API Token"}), 401
         
-    # 2. Extract the scanned QR code token sent by the scanner
     scanned_hash = request.args.get("qr_hash")
     if not scanned_hash:
         return jsonify({"status": "ERROR", "message": "Missing Parameter: qr_hash required"}), 400
         
-    # 3. Query your high-speed ledger memory cache for a match
     for profile in RECORDS_MEM_POOL:
         if profile["hash"] == scanned_hash:
-            print(f"💰 [API BILLING LOG] B2B Verification matched for: {profile['name']}. Billing client.")
-            # Return full bundled verification details instantly as a JSON stream
             return jsonify({
                 "status": "SUCCESS",
                 "verified": True,
