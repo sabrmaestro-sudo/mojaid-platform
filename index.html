@@ -4,10 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MojaID | Distributed Identity Aggregator</title>
-    
-    <!-- 1. LIVE CDNJX QR CODE COMPILER INFRASTRUCTURE LINK -->
-    <script src="https://cloudflare.com" integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4pNc1fbno5vKp4HQM5eF7vYMPT15+E631MNTM3NA0UTyPrg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    
     <style>
         :root {
             --bg-dark: #030712;
@@ -47,7 +43,7 @@
         .alert-box { background: rgba(59, 130, 246, 0.1); color: #93c5fd; padding: 16px 20px; border-radius: 14px; margin-bottom: 30px; border: 1px solid rgba(59, 130, 246, 0.2); font-size: 14px; font-weight: 600; border-left: 5px solid var(--neon-blue); }
         .error-msg { background: rgba(239, 68, 68, 0.1); color: #fca5a5; padding: 16px 20px; border-radius: 14px; margin-bottom: 30px; border: 1px solid rgba(239, 68, 68, 0.2); font-size: 14px; font-weight: 600; border-left: 5px solid #ef4444; }
         
-        /* 📱 REMOVED CIRCLE CLIPPING CONTRAINTS TO RENDER THE QR FULLY VISIBLE */
+        /* 📱 CLEAN DISPLAY CONTAINER OPTIMIZED FOR THE NATIVE IMAGE GENERATOR LINK */
         .qr-card-overlay { background: rgba(15, 23, 42, 0.6); padding: 25px; border-radius: 20px; border: 1px solid rgba(16, 185, 129, 0.3); text-align: center; margin-bottom: 35px; box-shadow: 0 0 30px rgba(16, 185, 129, 0.1); }
         .qr-element-container { 
             background: #ffffff; 
@@ -56,8 +52,14 @@
             border-radius: 16px; 
             margin: 15px auto; 
             box-shadow: 0 10px 20px rgba(0,0,0,0.2); 
-            width: auto; 
-            height: auto; 
+            width: 172px;
+            height: 172px;
+            box-sizing: border-box;
+        }
+        .qr-element-container img {
+            display: block;
+            width: 140px;
+            height: 140px;
         }
     </style>
 </head>
@@ -73,23 +75,14 @@
             <div class="qr-card-overlay">
                 <h3 style="color:#34d399; margin:0 0 5px 0;">🎉 MojaID Synchronization Successful!</h3>
                 <p style="color:var(--text-muted); font-size:13px; margin:0;">Flash this secure QR asset at any accredited hospital or financial node terminal.</p>
+                
+                <!-- Bypassed JavaScript engine dependencies using a native Image source string -->
                 <div class="qr-element-container">
-                    <div id="qrcode"></div>
+                    <img src="https://qrserver.com{{ qr_data }}" alt="MojaID QR Matrix Token">
                 </div>
+                
                 <div style="font-family:monospace; font-size:11px; color:var(--text-muted); margin-top: 10px;">HASH: {{ qr_data[:24] }}...</div>
             </div>
-            
-            <script>
-                // Generate QR pixels cleanly into the square white target container card
-                new QRCode(document.getElementById("qrcode"), {
-                    text: "{{ qr_data }}",
-                    width: 140,
-                    height: 140,
-                    colorDark : "#030712",
-                    colorLight : "#ffffff",
-                    correctLevel : QRCode.CorrectLevel.M
-                });
-            </script>
         {% endif %}
 
         <div class="tab-menu">
