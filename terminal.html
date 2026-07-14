@@ -4,10 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MojaID | External Verification Node</title>
-    
-    <!-- ⚡ HIGH-SPEED JAVASCRIPT QR DECODER CORE (NO CAMERA DEPENDENCIES) -->
-    <script src="https://jsdelivr.net"></script>
-
     <style>
         :root {
             --bg-terminal: #0b0f19;
@@ -41,12 +37,12 @@
         label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-gray); letter-spacing: 1px; margin-bottom: 8px; }
         input[type="text"] { width: 100%; padding: 14px; background: #090d16; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; color: white; font-size: 14px; box-sizing: border-box; font-family: monospace; }
         
-        /* Premium Action Clicker Button */
+        /* Interactive Action Input Button Link */
         .native-scan-trigger { display: block; text-align: center; background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); color: #000000; font-weight: 800; font-size: 14px; text-transform: uppercase; padding: 18px; border-radius: 12px; cursor: pointer; letter-spacing: 0.5px; box-shadow: 0 8px 20px rgba(6, 182, 212, 0.2); transition: transform 0.1s ease; border: none; width: 100%; box-sizing: border-box; }
         .native-scan-trigger:active { transform: scale(0.98); }
         .native-scan-trigger input[type="file"] { display: none; }
         
-        /* Verification Status Output Panel */
+        /* Verification Status Panel Sheet */
         .result-display { background: #090d16; border-radius: 14px; padding: 20px; display: none; border-left: 4px solid var(--neon-green); margin-top: 25px; box-shadow: inset 0 2px 8px rgba(0,0,0,0.5); }
         .result-display.error { border-left-color: var(--neon-red); }
         .result-display h4 { margin: 0 0 12px 0; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -64,111 +60,54 @@
             <p>Accredited Verification Portal</p>
         </div>
 
-        <!-- B2B SECURITY KEY HANDSHAKE PARAMETER -->
+        <!-- B2B ACCESS Token PARAMETER -->
         <div class="field-group">
             <label>Secure B2B Client Access Token</label>
             <input type="text" id="b2bToken" value="mojaid_live_b2b_token_xyz789">
         </div>
 
-        <!-- THE NATIVE INTERACTIVE TRIGGER FRAME CLICKER -->
+        <!-- STABLE NATIVE OPERATING SYSTEM FILE CARRIER -->
         <label>Hardware Scanner Authentication Portal</label>
         <label for="native-hardware-input" class="native-scan-trigger">
             📷 Scan User QR Code
-            <!-- 'capture="environment"' forces mobile platforms to boot up their native phone camera client -->
-            <input type="file" id="native-hardware-input" accept="image/*" capture="environment" onchange="processImageMatrix(this)">
+            <input type="file" id="native-hardware-input" accept="image/*" capture="environment" onchange="uploadAndVerifyImage(this)">
         </label>
 
-        <!-- SECURE LIVE TRANSACTION telemetry FEED MONITOR -->
+        <!-- SECURE SYSTEM CONSOLE MONITOR -->
         <div id="resultDisplay" class="result-display">
             <h4 id="resultStatus" style="color: var(--neon-green);">Verification Cleared</h4>
             <div id="resultContent"></div>
         </div>
     </div>
 
-    <!-- 🔌 EMBEDDED HIGH-TOLERANCE HARDWARE CONVERTER CODES -->
+    <!-- 🔌 FAULT-TOLERANT LEDGER HANDSHAKE SCRIPTS -->
     <script>
-        function processImageMatrix(inputElement) {
+        function uploadAndVerifyImage(inputElement) {
             if (!inputElement.files || inputElement.files.length === 0) return;
 
             const selectedFile = inputElement.files[0];
+            const tokenValue = document.getElementById('b2bToken').value;
+            
             const display = document.getElementById('resultDisplay');
             const statusText = document.getElementById('resultStatus');
             const content = document.getElementById('resultContent');
 
+            // Unveil real-time telemetry processing messages
             display.style.display = "block";
             display.classList.remove('error');
             statusText.style.color = "var(--neon-cyan)";
-            statusText.textContent = "⚙️ Extracting Image Matrix...";
-            content.innerHTML = `<p style="font-size:12px; color:var(--text-gray); margin:0;">Reading token string from snapshot pixels...</p>`;
+            statusText.textContent = "📡 Uploading to Server Node...";
+            content.innerHTML = `<p style="font-size:12px; color:var(--text-gray); margin:0;">Bypassing device processor. Decoding matrix parameters securely on backend...</p>`;
 
-            // Initialize image reader infrastructure pipeline
-            const imageReader = new FileReader();
-            imageReader.onload = function(event) {
-                const imageObject = new Image();
-                imageObject.onload = function() {
-                    // Create an in-memory virtual HTML5 Canvas container frame
-                    const virtualCanvas = document.createElement("canvas");
-                    const canvasContext = virtualCanvas.getContext("2d");
-                    
-                    // Constrain maximum grid rendering allocations to save processing overhead
-                    const maxBoundary = 1024;
-                    let calculatedWidth = imageObject.width;
-                    let calculatedHeight = imageObject.height;
+            // Pack the raw file data payload safely inside a multipart form object
+            const networkFormData = new FormData();
+            networkFormData.append('qr_image', selectedFile);
+            networkFormData.append('auth_token', tokenValue);
 
-                    if (calculatedWidth > maxBoundary || calculatedHeight > maxBoundary) {
-                        if (calculatedWidth > calculatedHeight) {
-                            calculatedHeight = Math.round((calculatedHeight * maxBoundary) / calculatedWidth);
-                            calculatedWidth = maxBoundary;
-                        } else {
-                            calculatedWidth = Math.round((calculatedWidth * maxBoundary) / calculatedHeight);
-                            calculatedHeight = maxBoundary;
-                        }
-                    }
-
-                    virtualCanvas.width = calculatedWidth;
-                    virtualCanvas.height = calculatedHeight;
-                    
-                    // Draw image pixels to canvas buffer matrix array
-                    canvasContext.drawImage(imageObject, 0, 0, calculatedWidth, calculatedHeight);
-                    const imagePixelArray = canvasContext.getImageData(0, 0, calculatedWidth, calculatedHeight);
-                    
-                    // Fire the jsQR core data array processor engine
-                    const decodedMatrixResult = jsQR(imagePixelArray.data, imagePixelArray.width, imagePixelArray.height, {
-                        inversionAttempts: "dontInvert",
-                    });
-
-                    if (decodedMatrixResult) {
-                        // SUCCESS: Matrix tracking points identified successfully
-                        executeVerificationHandshake(decodedMatrixResult.data);
-                    } else {
-                        // REJECTED: Pixels blurry, distorted, or unreadable
-                        display.classList.add('error');
-                        statusText.style.color = "var(--neon-red)";
-                        statusText.textContent = "❌ Matrix Parsing Failure";
-                        content.innerHTML = `<p style="font-size:12px; margin:0;">Could not parse valid QR matrix data points. Align your target squarely, clear the camera lens, and take the picture again.</p>`;
-                    }
-                };
-                imageObject.src = event.target.result;
-            };
-            imageReader.readAsDataURL(selectedFile);
-        }
-
-        function executeVerificationHandshake(scannedHash) {
-            const token = document.getElementById('b2bToken').value;
-            const display = document.getElementById('resultDisplay');
-            const statusText = document.getElementById('resultStatus');
-            const content = document.getElementById('resultContent');
-
-            statusText.style.color = "var(--neon-cyan)";
-            statusText.textContent = "📡 Querying Core Ledger...";
-            content.innerHTML = `<p style="font-size:12px; color:var(--text-gray); margin:0;">Authorizing secure token link route fields...</p>`;
-
-            // Asynchronous fetch call routing data tokens back to server registry pipeline
-            fetch(`/api/v1/verify?qr_hash=${scannedHash}`, {
-                method: 'GET',
-                headers: {
-                    'X-MojaID-Auth': token
-                }
+            // Execute the secure post transmission loop back to the cluster server
+            fetch('/api/v1/scan-upload', {
+                method: 'POST',
+                body: networkFormData
             })
             .then(res => {
                 if (res.status === 200) {
@@ -178,3 +117,32 @@
                 } else {
                     display.classList.add('error');
                     statusText.style.color = "var(--neon-red)";
+                    statusText.textContent = `❌ Access Denied (${res.status})`;
+                }
+                return res.json();
+            })
+            .then(payload => {
+                if (payload.verified) {
+                    // Inject database profile metrics fields cleanly into terminal layout
+                    content.innerHTML = `
+                        <div class="data-item"><span>Full Legal Holder:</span><strong>${payload.data.full_name}</strong></div>
+                        <div class="data-item"><span>NHIF Clearance:</span><strong>${payload.data.nhif_status}</strong></div>
+                        <div class="data-item"><span>Driving Classification:</span><strong>${payload.data.license_class}</strong></div>
+                        <div class="data-item"><span>Registered Bank Node:</span><strong>${payload.data.banking_institution}</strong></div>
+                        <div class="data-item"><span>Registry Status:</span><strong style="color:var(--neon-green)">${payload.data.account_status}</strong></div>
+                    `;
+                } else {
+                    content.innerHTML = `<p style="font-size:12px; color:var(--neon-red); margin:0;">${payload.message}</p>`;
+                }
+            })
+            .catch(err => {
+                display.classList.add('error');
+                statusText.style.color = "var(--neon-red)";
+                statusText.textContent = "🚨 Gateway Connection Interrupted";
+                content.innerHTML = `<p style="font-size:12px; margin:0;">Could not establish data link parameters to backend system root cluster.</p>`;
+                console.error(err);
+            });
+        }
+    </script>
+</body>
+</html>
