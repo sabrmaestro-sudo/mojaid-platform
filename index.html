@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MojaID | Distributed Identity Aggregator</title>
-    <!-- Load the global QR Code JavaScript Compiler Engine -->
-    <script src="https://cloudflare.com"></script>
+    
+    <!-- 1. CORRECTED THE QR CODE GENERATION ENGINE LINK -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4pNc1fbno5vKp4HQM5eF7vYMPT15+E631MNTM3NA0UTyPrg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    
     <style>
         :root {
             --bg-dark: #030712;
@@ -45,9 +47,9 @@
         .alert-box { background: rgba(59, 130, 246, 0.1); color: #93c5fd; padding: 16px 20px; border-radius: 14px; margin-bottom: 30px; border: 1px solid rgba(59, 130, 246, 0.2); font-size: 14px; font-weight: 600; border-left: 5px solid var(--neon-blue); }
         .error-msg { background: rgba(239, 68, 68, 0.1); color: #fca5a5; padding: 16px 20px; border-radius: 14px; margin-bottom: 30px; border: 1px solid rgba(239, 68, 68, 0.2); font-size: 14px; font-weight: 600; border-left: 5px solid #ef4444; }
         
-        /* 📱 PREMIUM QR CARD MODAL COMPONENT */
+        /* 📱 PREMIUM QR CARD MODAL COMPONENT WITH ROUNDED STYLE AS PER YOUR UI MOCKUP */
         .qr-card-overlay { background: rgba(15, 23, 42, 0.6); padding: 25px; border-radius: 20px; border: 1px solid rgba(16, 185, 129, 0.3); text-align: center; margin-bottom: 35px; box-shadow: 0 0 30px rgba(16, 185, 129, 0.1); }
-        .qr-element-container { background: white; padding: 15px; display: inline-block; border-radius: 14px; margin: 15px auto; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        .qr-element-container { background: white; padding: 20px; display: inline-block; border-radius: 50%; margin: 15px auto; box-shadow: 0 10px 20px rgba(0,0,0,0.2); overflow: hidden; width: 160px; height: 160px; box-sizing: border-box; }
     </style>
 </head>
 <body>
@@ -65,17 +67,18 @@
                 <div class="qr-element-container">
                     <div id="qrcode"></div>
                 </div>
-                <div style="font-family:monospace; font-size:11px; color:var(--text-muted);">HASH: {{ qr_data[:24] }}...</div>
+                <div style="font-family:monospace; font-size:11px; color:var(--text-muted); margin-top: 10px;">HASH: {{ qr_data[:24] }}...</div>
             </div>
             
             <script>
                 // Execute the automated layout script logic to draw the QR block string
                 new QRCode(document.getElementById("qrcode"), {
                     text: "{{ qr_data }}",
-                    width: 160,
-                    height: 160,
+                    width: 120,
+                    height: 120,
                     colorDark : "#030712",
-                    colorLight : "#ffffff"
+                    colorLight : "#ffffff",
+                    correctLevel : QRCode.CorrectLevel.H
                 });
             </script>
         {% endif %}
@@ -102,7 +105,9 @@
                     </select>
                 </div>
                 <div><label>Verification Account Msisdn</label><input type='text' name='phone' placeholder='07XXXXXXXX' required></div>
-                <div class="span-2" style="text-align: right; margin-top: 15px;"><button type="button" class="btn-action" style="margin-top:0; width:auto; padding:12px 25px;" onclick="switchSection('attachments')">Proceed to Vault ➔</button></div>
+                <div class="span-2" style="text-align: right; margin-top: 15px;">
+                    <button type="button" class="btn-action" style="margin-top:0; width:auto; padding:12px 25px;" onclick="switchSection('attachments')">Proceed to Vault ➔</button>
+                </div>
             </div>
 
             <div id="attachmentsSection" class="form-grid" style="display: none;">
@@ -114,18 +119,24 @@
         </form>
     </div>
 
+    <!-- 2. FIXED COMPLETED NAVIGATION SCRIPT TAGS -->
     <script>
         function switchSection(target) {
             const demoForm = document.getElementById('demographicsSection');
             const vaultForm = document.getElementById('attachmentsSection');
             const t1 = document.getElementById('profileTab');
             const t2 = document.getElementById('vaultTab');
-            if (target === 'attachments') {
-                demoForm.style.display = 'none'; vaultForm.style.display = 'grid';
-                t1.classList.remove('active'); t2.classList.add('active');
+            
+            if (target === 'demographics') {
+                demoForm.style.display = 'grid';
+                vaultForm.style.display = 'none';
+                t1.classList.add('active');
+                t2.classList.remove('active');
             } else {
-                demoForm.style.display = 'grid'; vaultForm.style.display = 'none';
-                t2.classList.remove('active'); t1.classList.add('active');
+                demoForm.style.display = 'none';
+                vaultForm.style.display = 'grid';
+                t1.classList.remove('active');
+                t2.classList.add('active');
             }
         }
     </script>
