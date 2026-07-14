@@ -41,9 +41,11 @@
         label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-gray); letter-spacing: 1px; margin-bottom: 8px; }
         input[type="text"] { width: 100%; padding: 14px; background: #090d16; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; color: white; font-size: 14px; box-sizing: border-box; font-family: monospace; }
         
+        /* Camera UI elements */
         #scanner-viewport { width: 100%; background: #090d16; border-radius: 14px; overflow: hidden; border: 1px dashed var(--neon-cyan); margin-bottom: 20px; min-height: 250px; }
         .btn-control { width: 100%; padding: 14px; background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); color: black; border: none; font-weight: 800; font-size: 13px; text-transform: uppercase; border-radius: 10px; cursor: pointer; letter-spacing: 0.5px; margin-bottom: 15px; }
         
+        /* 📋 LIVE LEDGER OUTPUT SCREEN CONTAINER */
         .result-display { background: #090d16; border-radius: 14px; padding: 20px; display: none; border-left: 4px solid var(--neon-green); margin-top: 10px; }
         .result-display.error { border-left-color: var(--neon-red); }
         .result-display h4 { margin: 0 0 12px 0; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -61,15 +63,19 @@
             <p>Accredited Verification Portal</p>
         </div>
 
+        <!-- 1. AUTHORIZATION INPUT FOR THE HANDSHAKE PROMPT -->
         <div class="field-group">
             <label>Secure B2B Client Access Token</label>
+            <!-- Pre-populated with your app's true token value for smooth developer testing -->
             <input type="text" id="b2bToken" value="mojaid_live_b2b_token_xyz789" placeholder="Enter X-MojaID-Auth credential token">
         </div>
 
+        <!-- 2. PHYSICAL HARDWARE VIDEO CAMERA FRAME -->
         <label>Hardware Scanner Viewport</label>
         <div id="scanner-viewport"></div>
         <button id="toggleCamBtn" class="btn-control" onclick="toggleCameraHardware()">📷 Initialize Camera Node</button>
 
+        <!-- 3. REALTIME INTERACTIVE DATA CLUSTER -->
         <div id="resultDisplay" class="result-display">
             <h4 id="resultStatus" style="color: var(--neon-green);">Verification Cleared</h4>
             <div id="resultContent"></div>
@@ -85,63 +91,35 @@
             
             if (!isCamRunning) {
                 isCamRunning = true;
-                btn.textContent = "⚙️ Booting Lens Matrix...";
-                btn.disabled = true;
-
-                // Create scanner instance
+                btn.textContent = "🛑 Kill Camera Feed";
+                btn.style.background = "#ef4444";
+                btn.style.color = "white";
+                
+                // Initialize the library targeting the viewport div
                 html5QrcodeScanner = new Html5Qrcode("scanner-viewport");
                 
-                // Fallback architecture configuration sequence
                 html5QrcodeScanner.start(
-                    { facingMode: "environment" }, 
-                    { fps: 15, qrbox: { width: 220, height: 220 } },
+                    { facingMode: "environment" }, // Prioritize back phone camera
+                    { fps: 10, qrbox: { width: 200, height: 200 } },
                     (decodedText) => {
+                        // SUCCESS: A code was successfully intercepted by the lens matrices
                         processScannedToken(decodedText);
+                        // Briefly pulse stop camera to avoid multiple instant scans
                         toggleCameraHardware(); 
                     },
-                    (errorMessage) => { /* Silent tracking feed listener */ }
-                )
-                .then(() => {
-                    // CAMERA STARTED SUCCESSFULLY
-                    btn.disabled = false;
-                    btn.textContent = "🛑 Kill Camera Feed";
-                    btn.style.background = "#ef4444";
-                    btn.style.color = "white";
-                })
-                .catch(err => {
-                    // FALLBACK: If back camera fails or times out, request any available camera feed
-                    console.log("Back lens mismatch, falling back to universal hardware query...", err);
-                    
-                    html5QrcodeScanner.start(
-                        { facingMode: "any" }, // High tolerance device fallback
-                        { fps: 10, qrbox: { width: 200, height: 200 } },
-                        (decodedText) => {
-                            processScannedToken(decodedText);
-                            toggleCameraHardware();
-                        },
-                        (errorMessage) => {}
-                    )
-                    .then(() => {
-                        btn.disabled = false;
-                        btn.textContent = "🛑 Kill Camera Feed";
-                        btn.style.background = "#ef4444";
-                        btn.style.color = "white";
-                    })
-                    .catch(fallbackErr => {
-                        btn.disabled = false;
-                        isCamRunning = false;
-                        resetCamButton();
-                        alert("Camera stream blocked. Please ensure you are using Safari (iOS) or Chrome (Android) and have allowed camera access inside your system app permissions.");
-                        console.error("Hardware initialization completely blocked.", fallbackErr);
-                    });
+                    (errorMessage) => {
+                        // Scanning frame failure logs (silent to prevent console crowding)
+                    }
+                ).catch(err => {
+                    alert("Camera access denied or device hardware mismatch: " + err);
+                    isCamRunning = false;
+                    resetCamButton();
                 });
             } else {
                 isCamRunning = false;
                 resetCamButton();
                 if (html5QrcodeScanner) {
-                    html5QrcodeScanner.stop().then(() => {
-                        html5QrcodeScanner.clear();
-                    }).catch(err => console.log("Cleaning thread mismatch: ", err));
+                    html5QrcodeScanner.stop().catch(err => console.log("Stop mismatch: ", err));
                 }
             }
         }
@@ -153,6 +131,7 @@
             btn.style.color = "black";
         }
 
+        // 🚀 FIRE THE MACHINE-TO-MACHINE INTERACTIVE HANDSHAKE
         function processScannedToken(scannedHash) {
             const token = document.getElementById('b2bToken').value;
             const display = document.getElementById('resultDisplay');
@@ -162,6 +141,7 @@
             display.style.display = "block";
             content.innerHTML = `<p style="font-size:12px; color:var(--text-gray);">Querying centralized registry ledger records...</p>`;
 
+            // Fetch request mirroring exact B2B network topology architecture
             fetch(`/api/v1/verify?qr_hash=${scannedHash}`, {
                 method: 'GET',
                 headers: {
@@ -182,9 +162,25 @@
             })
             .then(payload => {
                 if (payload.verified) {
+                    // Inject raw dataset metrics cleanly into the institution's sheet layout
                     content.innerHTML = `
                         <div class="data-item"><span>Full Legal Holder:</span><strong>${payload.data.full_name}</strong></div>
                         <div class="data-item"><span>NHIF Clearance:</span><strong>${payload.data.nhif_status}</strong></div>
                         <div class="data-item"><span>Driving Classification:</span><strong>${payload.data.license_class}</strong></div>
                         <div class="data-item"><span>Registered Bank Node:</span><strong>${payload.data.banking_institution}</strong></div>
                         <div class="data-item"><span>Registry Status:</span><strong style="color:var(--neon-green)">${payload.data.account_status}</strong></div>
+                    `;
+                } else {
+                    content.innerHTML = `<p style="font-size:12px; color:var(--neon-red); margin:0;">${payload.message}</p>`;
+                }
+            })
+            .catch(err => {
+                display.classList.add('error');
+                statusText.style.color = "var(--neon-red)";
+                statusText.textContent = "🚨 Gateway Timeout Connection Error";
+                content.innerHTML = `<p style="font-size:12px; margin:0;">Could not establish link parameters to the authentication root cluster pipeline.</p>`;
+            });
+        }
+    </script>
+</body>
+</html>
