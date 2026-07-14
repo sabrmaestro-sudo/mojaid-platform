@@ -1,6 +1,9 @@
 import time
 import hashlib
 import os
+import io
+import base64
+import qrcode
 from flask import Flask, request, render_template, jsonify
 
 app = Flask(__name__, template_folder='.')
@@ -62,8 +65,22 @@ def index():
                 "status": "Active"
             })
             alert_msg = f"📡 Pipeline verified over {network} gateway infrastructure node. Security prompt authorized."
-            # Set the QR data payload to the unique unreadable hash
-            qr_data = encrypted_nida
+            
+            # --- 🛠️ INJECTED EMBEDDED PYTHON QR CODE COMPILER GENERATOR ENGINE ---
+            qr = qrcode.QRCode(version=1, box_size=10, border=1)
+            qr.add_data(encrypted_nida)
+            qr.make(fit=True)
+            
+            # Draw standard grid layout image
+            img = qr.make_image(fill_color="#030712", back_color="#ffffff")
+            
+            # Transform image bytes into virtual computer memory 
+            buffer = io.BytesIO()
+            img.save(buffer, format="PNG")
+            img_str = base64.b64encode(buffer.getvalue()).decode("utf-8")
+            
+            # Assign the local embedded base64 string to the template context variable
+            qr_data = f"data:image/png;base64,{img_str}"
 
     return render_template("index.html", alert_msg=alert_msg, error_msg=error_msg, qr_data=qr_data)
 
