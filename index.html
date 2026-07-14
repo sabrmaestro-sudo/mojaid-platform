@@ -43,8 +43,9 @@
         .alert-box { background: rgba(59, 130, 246, 0.1); color: #93c5fd; padding: 16px 20px; border-radius: 14px; margin-bottom: 30px; border: 1px solid rgba(59, 130, 246, 0.2); font-size: 14px; font-weight: 600; border-left: 5px solid var(--neon-blue); }
         .error-msg { background: rgba(239, 68, 68, 0.1); color: #fca5a5; padding: 16px 20px; border-radius: 14px; margin-bottom: 30px; border: 1px solid rgba(239, 68, 68, 0.2); font-size: 14px; font-weight: 600; border-left: 5px solid #ef4444; }
         
-        /* 📱 CLEAN DISPLAY CONTAINER OPTIMIZED FOR THE NATIVE IMAGE GENERATOR LINK */
         .qr-card-overlay { background: rgba(15, 23, 42, 0.6); padding: 25px; border-radius: 20px; border: 1px solid rgba(16, 185, 129, 0.3); text-align: center; margin-bottom: 35px; box-shadow: 0 0 30px rgba(16, 185, 129, 0.1); }
+        
+        /* 📱 CLEAN DISPLAY WITH BUILT-IN SIZE SAFEGUARDS FOR IMAGES */
         .qr-element-container { 
             background: #ffffff; 
             padding: 16px; 
@@ -76,12 +77,13 @@
                 <h3 style="color:#34d399; margin:0 0 5px 0;">🎉 MojaID Synchronization Successful!</h3>
                 <p style="color:var(--text-muted); font-size:13px; margin:0;">Flash this secure QR asset at any accredited hospital or financial node terminal.</p>
                 
-                <!-- Bypassed JavaScript engine dependencies using a native Image source string -->
+                <!-- FIX: Rendering the Base64 image layout using the exact image variable -->
                 <div class="qr-element-container">
-                    <img src="https://qrserver.com{{ qr_data }}" alt="MojaID QR Matrix Token">
+                    <img src="{{ qr_data }}" alt="MojaID QR Matrix Token">
                 </div>
                 
-                <div style="font-family:monospace; font-size:11px; color:var(--text-muted); margin-top: 10px;">HASH: {{ qr_data[:24] }}...</div>
+                <!-- CLEAN LABEL FOR YOUR FOOTER SYSTEM -->
+                <div style="font-family:monospace; font-size:11px; color:var(--text-muted); margin-top: 10px;">🛡️ DECENTRALIZED IDENTITY REGISTRY TOKEN GENERATED</div>
             </div>
         {% endif %}
 
