@@ -3,3 +3,5 @@ requests
 gunicorn
 qrcode
 Pillow
+pyzbar==0.1.9
+opencv-python-headless==4.9.0.80
