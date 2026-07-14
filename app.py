@@ -4,6 +4,8 @@ import os
 import io
 import base64
 import qrcode
+import cv2
+import numpy as np
 from PIL import Image
 from flask import Flask, request, render_template, jsonify
 
@@ -83,7 +85,7 @@ def index():
 def terminal_portal():
     return render_template("terminal.html")
 
-# --- 🔌 BUG-FREE BACKEND IMAGE DECODER PROCESSOR ROUTE ---
+# --- 🔌 UPDATED: ULTRA-STABLE OPENCV DECODER PIPELINE ROUTE ---
 @app.route("/api/v1/scan-upload", methods=["POST"])
 def scan_upload_api():
     client_auth_token = request.headers.get("X-MojaID-Auth") or request.form.get("auth_token")
@@ -98,37 +100,33 @@ def scan_upload_api():
         return jsonify({"status": "ERROR", "message": "Empty file name parameter window"}), 400
 
     try:
-        # Read the uploaded photo file directly into an in-memory image object
+        # 1. Read binary files directly into NumPy memory arrays
         img_bytes = file.read()
-        image = Image.open(io.BytesIO(img_bytes))
+        nparr = np.frombuffer(img_bytes, np.uint8)
+        cv_img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
         
-        # Deploy a fast, fallback-safe web native reader tool
-        from qrcode import QRCode
-        # Dynamic import hook decoding layout arrays
-        detector = qrcode.Decoder()
-        
-        # Resize massive mobile pictures to accelerate system calculation tracking
-        image.thumbnail((800, 800))
-        
-        # Extract string array parameters
-        from pyzbar.pyzbar import decode
-        decoded_objects = decode(image)
-        
-        if not decoded_objects:
-            # Secondary check fallback using OpenCV tracker parameters if available
-            import cv2
-            import numpy as np
-            nparr = np.frombuffer(img_bytes, np.uint8)
-            cv_img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-            qr_decoder = cv2.QRCodeDetector()
-            scanned_hash, _, _ = qr_decoder.detectAndDecode(cv_img)
-        else:
-            scanned_hash = decoded_objects[0].data.decode('utf-8')
+        if cv_img is None:
+            return jsonify({"status": "ERROR", "message": "Uploaded file is corrupted or not a valid image format"}), 400
+
+        # 2. Run the secure native OpenCV Computer-Vision Matrix Detector Engine
+        qr_decoder = cv2.QRCodeDetector()
+        scanned_hash, points, straight_qrcode = qr_decoder.detectAndDecode(cv_img)
+
+        # 3. Fallback: If image was rotated or blurry, check if pyzbar is available to double-check
+        if not scanned_hash:
+            try:
+                from pyzbar.pyzbar import decode
+                pil_image = Image.open(io.BytesIO(img_bytes))
+                decoded_objects = decode(pil_image)
+                if decoded_objects:
+                    scanned_hash = decoded_objects[0].data.decode('utf-8')
+            except Exception:
+                pass # Fail silently and fall through to the safety handler below
 
         if not scanned_hash:
-            return jsonify({"status": "ERROR", "message": "Could not extract valid QR code blocks. Retake image clearly."}), 422
+            return jsonify({"status": "ERROR", "message": "Could not identify a clear QR code matrix. Ensure the code is centered and in focus, then retake the photo."}), 422
 
-        # Cross-reference the verified data parameter metrics on your storage ledger
+        # 4. Query the application cache ledger layer for a matching record profile
         for profile in RECORDS_MEM_POOL:
             if profile["hash"] == scanned_hash:
                 return jsonify({
@@ -143,10 +141,10 @@ def scan_upload_api():
                     }
                 }), 200
 
-        return jsonify({"status": "SUCCESS", "verified": False, "message": "Profile token not found in registry cluster."}), 404
+        return jsonify({"status": "SUCCESS", "verified": False, "message": "Profile token signature not found in registry cluster."}), 404
 
     except Exception as err:
-        return jsonify({"status": "ERROR", "message": f"Hardware matrix tracking error: {str(err)}"}), 500
+        return jsonify({"status": "ERROR", "message": f"Server hardware execution error: {str(err)}"}), 500
 
 @app.route("/api/v1/verify", methods=["GET"])
 def b2b_verify_api():
