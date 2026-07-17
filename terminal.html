@@ -33,16 +33,12 @@
         .institution-meta h2 span { color: var(--neon-cyan); }
         .institution-meta p { margin: 5px 0 0 0; font-size: 12px; color: var(--text-gray); text-transform: uppercase; letter-spacing: 1px; }
         
-        .field-group { margin-bottom: 25px; }
+        .field-group { margin-bottom: 20px; }
         label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-gray); letter-spacing: 1px; margin-bottom: 8px; }
         input[type="text"] { width: 100%; padding: 14px; background: #090d16; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; color: white; font-size: 14px; box-sizing: border-box; font-family: monospace; }
         
-        /* Interactive Action Input Button Link */
-        .native-scan-trigger { display: block; text-align: center; background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); color: #000000; font-weight: 800; font-size: 14px; text-transform: uppercase; padding: 18px; border-radius: 12px; cursor: pointer; letter-spacing: 0.5px; box-shadow: 0 8px 20px rgba(6, 182, 212, 0.2); transition: transform 0.1s ease; border: none; width: 100%; box-sizing: border-box; }
-        .native-scan-trigger:active { transform: scale(0.98); }
-        .native-scan-trigger input[type="file"] { display: none; }
+        .btn-control { width: 100%; padding: 16px; background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); color: black; border: none; font-weight: 800; font-size: 13px; text-transform: uppercase; border-radius: 10px; cursor: pointer; letter-spacing: 0.5px; margin-top: 10px; }
         
-        /* Verification Status Panel Sheet */
         .result-display { background: #090d16; border-radius: 14px; padding: 20px; display: none; border-left: 4px solid var(--neon-green); margin-top: 25px; box-shadow: inset 0 2px 8px rgba(0,0,0,0.5); }
         .result-display.error { border-left-color: var(--neon-red); }
         .result-display h4 { margin: 0 0 12px 0; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -60,55 +56,44 @@
             <p>Accredited Verification Portal</p>
         </div>
 
-        <!-- B2B ACCESS Token PARAMETER -->
         <div class="field-group">
             <label>Secure B2B Client Access Token</label>
             <input type="text" id="b2bToken" value="mojaid_live_b2b_token_xyz789">
         </div>
 
-        <!-- STABLE NATIVE OPERATING SYSTEM FILE CARRIER -->
-        <label>Hardware Scanner Authentication Portal</label>
-        <label for="native-hardware-input" class="native-scan-trigger">
-            📷 Scan User QR Code
-            <input type="file" id="native-hardware-input" accept="image/*" capture="environment" onchange="uploadAndVerifyImage(this)">
-        </label>
+        <div class="field-group">
+            <label>Scanned Credential Token Hash</label>
+            <input type="text" id="qrHashInput" placeholder="Paste user's hash key string here">
+        </div>
 
-        <!-- SECURE SYSTEM CONSOLE MONITOR -->
+        <button class="btn-control" onclick="executeVerificationHandshake()">🛡️ Verify Identity Profile</button>
+
         <div id="resultDisplay" class="result-display">
             <h4 id="resultStatus" style="color: var(--neon-green);">Verification Cleared</h4>
             <div id="resultContent"></div>
         </div>
     </div>
 
-    <!-- 🔌 FAULT-TOLERANT LEDGER HANDSHAKE SCRIPTS -->
     <script>
-        function uploadAndVerifyImage(inputElement) {
-            if (!inputElement.files || inputElement.files.length === 0) return;
-
-            const selectedFile = inputElement.files[0];
-            const tokenValue = document.getElementById('b2bToken').value;
-            
+        function executeVerificationHandshake() {
+            const token = document.getElementById('b2bToken').value;
+            const scannedHash = document.getElementById('qrHashInput').value.trim();
             const display = document.getElementById('resultDisplay');
             const statusText = document.getElementById('resultStatus');
             const content = document.getElementById('resultContent');
 
-            // Unveil real-time telemetry processing messages
+            if(!scannedHash) {
+                alert("Please insert a valid token string first.");
+                return;
+            }
+
             display.style.display = "block";
             display.classList.remove('error');
             statusText.style.color = "var(--neon-cyan)";
-            statusText.textContent = "📡 Uploading to Server Node...";
-            content.innerHTML = `<p style="font-size:12px; color:var(--text-gray); margin:0;">Bypassing device processor. Decoding matrix parameters securely on backend...</p>`;
+            statusText.textContent = "📡 Querying Core Ledger...";
+            content.innerHTML = `<p style="font-size:12px; color:var(--text-gray); margin:0;">Connecting to database...</p>`;
 
-            // Pack the raw file data payload safely inside a multipart form object
-            const networkFormData = new FormData();
-            networkFormData.append('qr_image', selectedFile);
-            networkFormData.append('auth_token', tokenValue);
-
-            // Execute the secure post transmission loop back to the cluster server
-            fetch('/api/v1/scan-upload', {
-                method: 'POST',
-                body: networkFormData
-            })
+            fetch(`/api/v1/verify?qr_hash=${scannedHash}&auth_token=${token}`)
             .then(res => {
                 if (res.status === 200) {
                     display.classList.remove('error');
@@ -123,7 +108,6 @@
             })
             .then(payload => {
                 if (payload.verified) {
-                    // Inject database profile metrics fields cleanly into terminal layout
                     content.innerHTML = `
                         <div class="data-item"><span>Full Legal Holder:</span><strong>${payload.data.full_name}</strong></div>
                         <div class="data-item"><span>NHIF Clearance:</span><strong>${payload.data.nhif_status}</strong></div>
@@ -138,9 +122,8 @@
             .catch(err => {
                 display.classList.add('error');
                 statusText.style.color = "var(--neon-red)";
-                statusText.textContent = "🚨 Gateway Connection Interrupted";
-                content.innerHTML = `<p style="font-size:12px; margin:0;">Could not establish data link parameters to backend system root cluster.</p>`;
-                console.error(err);
+                statusText.textContent = "🚨 Gateway Timeout Connection Error";
+                content.innerHTML = `<p style="font-size:12px; margin:0;">Could not establish parameters connection link.</p>`;
             });
         }
     </script>
