@@ -3,210 +3,222 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MojaID | Distributed Sovereign Identity Hub</title>
+    <title>MojaID | Government Central Identity Grid</title>
     <style>
         :root {
-            --bg-deep: #020617;
-            --glass-panel: rgba(15, 23, 42, 0.45);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --neon-blue: #3b82f6;
+            --bg-dark: #020617;
+            --panel-glass: rgba(15, 23, 42, 0.6);
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --neon-blue: #2563eb;
             --neon-cyan: #06b6d4;
             --neon-emerald: #10b981;
-            --neon-red: #ef4444;
-            --text-primary: #f9fafb;
-            --text-muted: #9ca3af;
-            --glow-gradient: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+            --neon-pink: #ec4899;
+            --text-main: #f9fafb;
+            --text-secondary: #9ca3af;
+            --glow-accent: linear-gradient(135deg, #06b6d4 0%, #2563eb 100%);
+            --shadow-matrix: 0 25px 60px rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.1);
         }
 
         body {
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: radial-gradient(circle at 80% 20%, #1e1b4b 0%, #020617 70%);
-            color: var(--text-primary);
+            background: radial-gradient(circle at 90% 10%, #1e1b4b 0%, #020617 60%);
+            color: var(--text-main);
             margin: 0;
-            padding: 20px;
+            padding: 0;
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
             box-sizing: border-box;
         }
 
-        /* 🌐 SYSTEM UTILITY ACTION TOP BAR */
-        .system-top-bar {
-            max-width: 680px;
+        /* 🖥️ IMMERSIVE APPLICATION GRID STRUCTURE */
+        .workspace-shell {
+            max-width: 1080px;
             width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            padding: 0 10px;
-            box-sizing: border-box;
-        }
-
-        .lang-switch-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--glass-border);
-            color: var(--neon-cyan);
-            padding: 8px 16px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            transition: all 0.3s;
-        }
-
-        .lang-switch-btn:hover {
-            background: rgba(6, 182, 212, 0.15);
-            border-color: var(--neon-cyan);
-        }
-
-        /* 📱 IMMERSIVE PREMIUM APPLICATION CARD */
-        .app-shell {
-            background: var(--glass-panel);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            max-width: 680px;
-            width: 100%;
-            padding: 45px;
-            border-radius: 32px;
-            box-shadow: 0 35px 80px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255,255,255,0.1);
-            border: 1px solid var(--glass-border);
-            box-sizing: border-box;
-            position: relative;
+            min-height: 680px;
+            background: var(--panel-glass);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 1px solid var(--border-glass);
+            border-radius: 28px;
+            box-shadow: var(--shadow-matrix);
+            display: grid;
+            grid-template-columns: 300px 1fr;
             overflow: hidden;
+            margin: 20px;
+            position: relative;
         }
 
-        .app-shell::before {
+        /* Neon Accent Strip */
+        .workspace-shell::before {
             content: '';
             position: absolute;
             top: 0; left: 0; width: 100%; height: 4px;
-            background: var(--glow-gradient);
+            background: var(--glow-accent);
+            z-index: 10;
         }
 
-        .brand-header {
+        /* 🧭 SIDE PANEL: BRANDING, STATUS & LOCALIZATION CONTROL */
+        .control-sidebar {
+            background: rgba(7, 10, 22, 0.6);
+            border-right: 1px solid var(--border-glass);
+            padding: 40px 30px;
             display: flex;
-            align-items: center;
+            flex-direction: column;
             justify-content: space-between;
-            margin-bottom: 40px;
+            box-sizing: border-box;
         }
 
-        .logo-area h1 {
-            font-size: 28px;
+        .brand-block h1 {
+            font-size: 32px;
             font-weight: 900;
             margin: 0;
+            letter-spacing: -1px;
             text-transform: uppercase;
-            letter-spacing: -0.5px;
         }
 
-        .logo-area h1 span { color: var(--neon-cyan); }
-        .logo-area p { margin: 4px 0 0 0; font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .brand-block h1 span { color: var(--neon-cyan); }
+        .brand-block p { margin: 6px 0 0 0; font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; }
 
-        .secure-badge {
-            background: rgba(16, 185, 129, 0.08);
-            color: var(--neon-emerald);
-            padding: 6px 14px;
-            border-radius: 20px;
+        .system-status-indicator {
+            margin-top: 30px;
+            background: rgba(16, 185, 129, 0.05);
+            border: 1px solid rgba(16, 185, 129, 0.15);
+            border-radius: 12px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
             font-size: 11px;
             font-weight: 800;
-            border: 1px solid rgba(16, 185, 129, 0.15);
             text-transform: uppercase;
+            color: var(--neon-emerald);
             letter-spacing: 0.5px;
         }
 
-        /* 🎛️ NAVIGATION TABS MATRIX */
-        .tab-menu {
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--neon-emerald);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--neon-emerald);
+        }
+
+        /* 🌐 PREMIUM DEDICATED LANGUAGE CHOICE PANEL */
+        .localization-panel {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-glass);
+            border-radius: 16px;
+            padding: 16px;
+            margin-top: auto;
+        }
+
+        .localization-panel p {
+            margin: 0 0 12px 0;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            letter-spacing: 1px;
+        }
+
+        .lang-button-group {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            background: rgba(0,0,0,0.4);
-            padding: 6px;
-            border-radius: 16px;
-            border: 1px solid var(--glass-border);
-            margin-bottom: 40px;
+            gap: 10px;
         }
 
-        .tab-btn {
-            padding: 14px;
-            background: transparent;
-            color: var(--text-muted);
-            font-weight: 700;
+        .lang-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-glass);
+            color: var(--text-secondary);
+            padding: 10px;
+            border-radius: 10px;
             font-size: 12px;
-            text-transform: uppercase;
+            font-weight: 700;
             cursor: pointer;
-            border-radius: 12px;
-            text-align: center;
-            border: none;
-            letter-spacing: 0.5px;
-            transition: all 0.2s;
+            transition: all 0.3s ease;
         }
 
-        .tab-btn.active {
-            background: var(--glow-gradient);
-            color: #000000;
-            font-weight: 800;
-            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.25);
+        .lang-btn.active {
+            background: rgba(6, 182, 212, 0.1);
+            border-color: var(--neon-cyan);
+            color: var(--neon-cyan);
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.15);
         }
 
-        /* 📋 SYSTEM NOTIFICATIONS */
-        .alert-box { background: rgba(59, 130, 246, 0.08); color: #93c5fd; padding: 16px 20px; border-radius: 16px; margin-bottom: 35px; border: 1px solid rgba(59, 130, 246, 0.15); font-size: 13px; font-weight: 600; border-left: 4px solid var(--neon-blue); }
-        .error-msg { background: rgba(239, 68, 68, 0.08); color: #fca5a5; padding: 16px 20px; border-radius: 16px; margin-bottom: 35px; border: 1px solid rgba(239, 68, 68, 0.15); font-size: 13px; font-weight: 600; border-left: 4px solid var(--neon-red); }
+        .lang-btn:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-main);
+        }
 
-        /* 🗚 MODERN INPUT FIELDS */
+        /* 📄 MAIN SYSTEM CONTENT PORTAL WORKSPACE */
+        .content-portal {
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+
+        /* 🔒 AUTH SECTION SUB CONTAINER CARD */
+        .auth-card-wrapper {
+            max-width: 440px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .auth-card-wrapper h2 { font-size: 24px; font-weight: 800; margin: 0 0 8px 0; letter-spacing: -0.5px; }
+        .auth-card-wrapper p { font-size: 14px; color: var(--text-secondary); margin: 0 0 35px 0; }
+
+        .auth-tabs { display: flex; gap: 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); margin-bottom: 30px; }
+        .auth-tab { font-size: 13px; font-weight: 700; text-transform: uppercase; padding-bottom: 12px; cursor: pointer; color: var(--text-secondary); border-bottom: 2px solid transparent; letter-spacing: 0.5px; transition: all 0.2s; }
+        .auth-tab.active { color: var(--neon-cyan); border-color: var(--neon-cyan); font-weight: 800; }
+
+        /* 🎛️ DASHBOARD NAVIGATION TAB BAR */
+        .wizard-tabs { display: grid; grid-template-columns: 1fr 1fr; background: rgba(0, 0, 0, 0.4); padding: 5px; border-radius: 14px; border: 1px solid var(--border-glass); margin-bottom: 40px; }
+        .wizard-btn { padding: 12px; background: transparent; color: var(--text-secondary); font-weight: 700; font-size: 12px; text-transform: uppercase; cursor: pointer; border-radius: 10px; text-align: center; border: none; letter-spacing: 0.5px; transition: all 0.2s; }
+        .wizard-btn.active { background: var(--glow-accent); color: #ffffff; font-weight: 800; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3); }
+
+        /* 📋 NOTIFICATION LABELS */
+        .alert-box { background: rgba(59, 130, 246, 0.06); color: #93c5fd; padding: 16px 20px; border-radius: 14px; margin-bottom: 35px; border: 1px solid rgba(59, 130, 246, 0.15); font-size: 13px; font-weight: 600; border-left: 4px solid var(--neon-blue); }
+        .error-msg { background: rgba(239, 68, 68, 0.06); color: #fca5a5; padding: 16px 20px; border-radius: 14px; margin-bottom: 35px; border: 1px solid rgba(239, 68, 68, 0.15); font-size: 13px; font-weight: 600; border-left: 4px solid var(--neon-red); }
+
+        /* 🗚 DATA INPUT ARCHITECTURE GRID */
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
         .span-2 { grid-column: span 2; }
-        label { font-weight: 700; color: var(--text-muted); display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
-        input[type='text'], select { width: 100%; padding: 16px 20px; background: rgba(5, 7, 15, 0.7); color: var(--text-primary); border: 1px solid var(--glass-border); border-radius: 14px; box-sizing: border-box; font-size: 15px; transition: all 0.3s; }
-        input[type='text']:focus, select:focus { outline: none; border-color: var(--neon-cyan); box-shadow: 0 0 15px rgba(6, 182, 212, 0.15); background: rgba(5, 7, 15, 0.9); }
+        label { font-weight: 700; color: var(--text-secondary); display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 10px; }
+        input[type='text'], select { width: 100%; padding: 16px 20px; background: rgba(5, 7, 15, 0.6); color: var(--text-main); border: 1px solid var(--border-glass); border-radius: 14px; box-sizing: border-box; font-size: 15px; transition: all 0.3s ease; }
+        input[type='text']:focus, select:focus { outline: none; border-color: var(--neon-cyan); box-shadow: 0 0 15px rgba(6, 182, 212, 0.15); background: rgba(5, 7, 15, 0.8); }
         
-        .btn-action { background: var(--glow-gradient); color: #000000; border: none; padding: 18px; font-size: 15px; font-weight: 800; border-radius: 14px; cursor: pointer; width: 100%; margin-top: 35px; box-shadow: 0 8px 25px rgba(6, 182, 212, 0.2); text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.3s; }
+        .btn-action { background: var(--glow-accent); color: white; border: none; padding: 18px; font-size: 14px; font-weight: 800; border-radius: 14px; cursor: pointer; width: 100%; margin-top: 30px; box-shadow: 0 8px 25px rgba(37, 99, 235, 0.25); text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s; }
         .btn-action:hover { transform: translateY(-1px); box-shadow: 0 12px 30px rgba(6, 182, 212, 0.35); }
 
-        /* 🛡️ WALLET CARD SYSTEM OUTPUT */
-        .qr-card-overlay { background: rgba(9, 13, 24, 0.6); padding: 30px; border-radius: 24px; border: 1px solid rgba(16, 185, 129, 0.25); text-align: center; margin-bottom: 40px; box-shadow: 0 0 40px rgba(16, 185, 129, 0.08); }
-        .qr-element-container { background: #ffffff; padding: 16px; display: inline-block; border-radius: 20px; margin: 20px auto; box-shadow: 0 15px 35px rgba(0,0,0,0.4); width: 172px; height: 172px; box-sizing: border-box; }
+        /* 🛡️ SECURITY CREDENTIAL MATRIX DISPLAY SHEET */
+        .qr-card-overlay { background: rgba(9, 13, 24, 0.5); padding: 35px; border-radius: 24px; border: 1px solid rgba(16, 185, 129, 0.2); text-align: center; margin-bottom: 40px; box-shadow: 0 15px 40px rgba(0,0,0,0.4); }
+        .qr-element-container { background: #ffffff; padding: 16px; display: inline-block; border-radius: 20px; margin: 20px auto; box-shadow: 0 15px 35px rgba(0,0,0,0.5); width: 172px; height: 172px; box-sizing: border-box; }
         .qr-element-container img { display: block; width: 140px; height: 140px; }
-
-        /* 🔒 ACCESS LOGIN GATE OVERLAY */
-        .auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); z-index: 9999; display: flex; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; transition: all 0.3s ease; }
-        .auth-modal { background: #0f172a; border: 1px solid var(--glass-border); max-width: 420px; width: 100%; padding: 40px; border-radius: 28px; box-shadow: 0 30px 70px rgba(0,0,0,0.8); text-align: center; box-sizing: border-box; position: relative; }
-        .auth-tabs { display: flex; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 25px; justify-content: center; gap: 30px; }
-        .auth-tab { color: var(--text-muted); font-size: 14px; font-weight: 700; text-transform: uppercase; padding-bottom: 10px; cursor: pointer; border-bottom: 2px solid transparent; }
-        .auth-tab.active { color: var(--neon-cyan); border-color: var(--neon-cyan); font-weight: 800; }
     </style>
 </head>
 <body>
 
-    <!-- 🌐 UTILITY HEADER ACTIONS -->
-    <div class="system-top-bar">
-        <button class="lang-switch-btn" id="langBtn" onclick="toggleLanguageSystem()">🇹🇿 Swahili</button>
-        <button class="lang-switch-btn" style="color: #fca5a5;" onclick="logoutSecureSession()">🔒 Lock Core</button>
-    </div>
-
-    <!-- 🔒 LOGIN AND SIGN UP MODAL ENGINE OVERLAY -->
-    <div id="secureAuthOverlay" class="auth-overlay">
-        <div class="auth-modal">
-            <div class="auth-tabs">
-                <span class="auth-tab active" id="tabLogin" onclick="switchAuthMode('login')">Login</span>
-                <span class="auth-tab" id="tabSignup" onclick="switchAuthMode('signup')">Sign Up</span>
-            </div>
-            <form method="POST" action="/" style="text-align: left;">
-                <input type="hidden" name="action" value="auth">
-                <div class="field-group" style="margin-bottom: 20px;">
-                    <label id="lblAuthUser">Sovereign Email / Phone</label>
-                    <input type="text" placeholder="citizen@mojaid.go.tz" required style="background: rgba(0,0,0,0.3);">
-                </div>
-                <div class="field-group" style="margin-bottom: 10px;">
-                    <label id="lblAuthPass">Access Passphrase</label>
-                    <input type="text" placeholder="••••••••••••" required style="background: rgba(0,0,0,0.3); font-family: monospace;">
-                </div>
-                <button type="button" class="btn-action" style="margin-top: 25px;" onclick="bypassSecureModal()" id="btnAuthSubmit">Authorize Access</button>
-            </form>
-        </div>
-    </div>
-
-    <div class="app-shell">
-        <div class="brand-header">
-            <div class="logo-area">
+    <div class="workspace-shell">
+        
+        <!--🧭 CONTROL SIDEBAR (ALWAYS VISIBLE) -->
+        <div class="control-sidebar">
+            <div class="brand-block">
                 <h1>Moja<span>ID</span></h1>
                 <p id="lblSubTitle">Sovereign Identity Aggregator</p>
+                
+                <div class="system-status-indicator">
+                    <div class="status-dot"></div>
+                    <span id="lblSecureBadge">E2EE Ledger Secure</span>
+                </div>
+            </div>
+
+            <!-- 🌐 PREMIUM LANGUAGE CHOICE PANEL (ALWAYS VISIBLE) -->
+            <div class="localization-panel">
+                <p id="lblLangSelectHeader">Select Language / Lugha</p>
+                <div class="lang-button-group">
+                    <button class="lang-btn active" id="btnLangEn" onclick="switchLanguageEngine('en')">EN</button>
