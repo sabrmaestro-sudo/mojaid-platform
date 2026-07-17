@@ -28,7 +28,7 @@ RECORDS_MEM_POOL = [
 SECRET_ADMIN_TOKEN = "fungua-mojaid-revenue-2026"
 B2B_API_TOKEN = "mojaid_live_b2b_token_xyz789"
 
-# PARTNER WALLET SYSTEM (Preloaded with 5,000 TZS for testing)
+# 💳 NEW: PARTNER WALLET SYSTEM (Preloaded with 5,000 TZS for testing)
 B2B_PARTNER_WALLETS = {
     "mojaid_live_b2b_token_xyz789": {
         "institution_name": "Muhimbili National Hospital Node",
@@ -49,13 +49,6 @@ def index():
     qr_data = "" 
     
     if request.method == "POST":
-        # Route router check: Identify if request is form login authorization or identity sync
-        action = request.form.get("action")
-        
-        if action == "auth":
-            alert_msg = "🔓 Session authorized successfully. Access to Identity Core granted."
-            return render_template("index.html", alert_msg=alert_msg, error_msg=error_msg, qr_data=qr_data)
-            
         full_name = request.form.get("full_name")
         nida_id = request.form.get("nida_id")
         network = request.form.get("network")
@@ -100,7 +93,7 @@ def index():
 def terminal_portal():
     return render_template("terminal.html")
 
-# --- 🔌 THE PRODUCTION B2B API CONNECTION POINT WITH BILLING DEDUCTIONS ---
+# --- 🔌 UPDATED: B2B VERIFY ROUTE WITH BILLING SYSTEM DEDUCTIONS ---
 @app.route("/api/v1/verify", methods=["GET"])
 def b2b_verify_api():
     global B2B_VERIFICATION_REVENUE
@@ -133,7 +126,7 @@ def b2b_verify_api():
             
             print(f"💰 [BILLING DEBIT] 500 TZS deducted from {partner['institution_name']}. New balance: {partner['balance']} TZS.")
             
-            # Return full verification metrics payload matching your frontend interface template updates
+            # Return profile bundled payload with remaining billing parameters attached
             return jsonify({
                 "status": "SUCCESS",
                 "verified": True,
@@ -157,8 +150,7 @@ def b2b_verify_api():
 def secret_admin(token):
     if token != SECRET_ADMIN_TOKEN:
         return "🔒 Access Denied", 403
-    
-    # Combined metrics loop calculation mapping both customer registration fees and B2B lookup payouts
+    # Combined calculations mapping both customer registration fees and B2B lookups
     customer_registration_fees = sum(p.get("fee", 500) for p in RECORDS_MEM_POOL)
     combined_net_worth = customer_registration_fees + B2B_VERIFICATION_REVENUE
     
