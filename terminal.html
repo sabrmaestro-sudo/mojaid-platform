@@ -1,131 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MojaID | External Verification Node</title>
-    <style>
-        :root {
-            --bg-terminal: #0b0f19;
-            --surface-panel: #161b26;
-            --neon-cyan: #06b6d4;
-            --neon-green: #10b981;
-            --neon-red: #ef4444;
-            --text-light: #f3f4f6;
-            --text-gray: #9ca3af;
-            --border-glow: rgba(6, 182, 212, 0.15);
-        }
-        body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background-color: var(--bg-terminal);
-            color: var(--text-light);
-            margin: 0;
-            padding: 30px 15px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            box-sizing: border-box;
-        }
-        .portal-shell { max-width: 500px; width: 100%; background: var(--surface-panel); padding: 30px; border-radius: 24px; box-shadow: 0 25px 60px rgba(0,0,0,0.6); border: 1px solid var(--border-glow); box-sizing: border-box; }
-        .institution-meta { text-align: center; margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 20px; }
-        .institution-meta h2 { margin: 0; font-size: 20px; font-weight: 800; letter-spacing: 0.5px; }
-        .institution-meta h2 span { color: var(--neon-cyan); }
-        .institution-meta p { margin: 5px 0 0 0; font-size: 12px; color: var(--text-gray); text-transform: uppercase; letter-spacing: 1px; }
-        
-        .field-group { margin-bottom: 20px; }
-        label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-gray); letter-spacing: 1px; margin-bottom: 8px; }
-        input[type="text"] { width: 100%; padding: 14px; background: #090d16; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; color: white; font-size: 14px; box-sizing: border-box; font-family: monospace; }
-        
-        .btn-control { width: 100%; padding: 16px; background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); color: black; border: none; font-weight: 800; font-size: 13px; text-transform: uppercase; border-radius: 10px; cursor: pointer; letter-spacing: 0.5px; margin-top: 10px; }
-        
-        .result-display { background: #090d16; border-radius: 14px; padding: 20px; display: none; border-left: 4px solid var(--neon-green); margin-top: 25px; box-shadow: inset 0 2px 8px rgba(0,0,0,0.5); }
-        .result-display.error { border-left-color: var(--neon-red); }
-        .result-display h4 { margin: 0 0 12px 0; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .data-item { display: flex; justify-content: space-between; font-size: 13px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
-        .data-item:last-child { border: none; }
-        .data-item span { color: var(--text-gray); font-weight: 600; }
-        .data-item strong { color: white; }
-    </style>
-</head>
-<body>
+// Overwrite ONLY the payload response script loop inside terminal.html
+.then(payload => {
+    if (payload.verified) {
+        content.innerHTML = `
+            <!-- 💸 REAL-TIME TRANSACTION METRICS FEED -->
+            <div style="background: rgba(16, 185, 129, 0.08); padding: 10px; border-radius: 8px; margin-bottom: 15px; border: 1px dashed var(--neon-green); font-size:11px;">
+                <span style="color:var(--neon-green)">💸 Debit Applied: -${payload.billing.charge} TZS</span><br>
+                <span style="color:var(--text-gray)">Terminal Node Wallet Balance: ${payload.billing.remaining_balance} TZS</span>
+            </div>
 
-    <div class="portal-shell">
-        <div class="institution-meta">
-            <h2>Moja<span>ID</span> Node Terminal</h2>
-            <p>Accredited Verification Portal</p>
-        </div>
-
-        <div class="field-group">
-            <label>Secure B2B Client Access Token</label>
-            <input type="text" id="b2bToken" value="mojaid_live_b2b_token_xyz789">
-        </div>
-
-        <div class="field-group">
-            <label>Scanned Credential Token Hash</label>
-            <input type="text" id="qrHashInput" placeholder="Paste user's hash key string here">
-        </div>
-
-        <button class="btn-control" onclick="executeVerificationHandshake()">🛡️ Verify Identity Profile</button>
-
-        <div id="resultDisplay" class="result-display">
-            <h4 id="resultStatus" style="color: var(--neon-green);">Verification Cleared</h4>
-            <div id="resultContent"></div>
-        </div>
-    </div>
-
-    <script>
-        function executeVerificationHandshake() {
-            const token = document.getElementById('b2bToken').value;
-            const scannedHash = document.getElementById('qrHashInput').value.trim();
-            const display = document.getElementById('resultDisplay');
-            const statusText = document.getElementById('resultStatus');
-            const content = document.getElementById('resultContent');
-
-            if(!scannedHash) {
-                alert("Please insert a valid token string first.");
-                return;
-            }
-
-            display.style.display = "block";
-            display.classList.remove('error');
-            statusText.style.color = "var(--neon-cyan)";
-            statusText.textContent = "📡 Querying Core Ledger...";
-            content.innerHTML = `<p style="font-size:12px; color:var(--text-gray); margin:0;">Connecting to database...</p>`;
-
-            fetch(`/api/v1/verify?qr_hash=${scannedHash}&auth_token=${token}`)
-            .then(res => {
-                if (res.status === 200) {
-                    display.classList.remove('error');
-                    statusText.style.color = "var(--neon-green)";
-                    statusText.textContent = "✅ Verification Cleared (200 OK)";
-                } else {
-                    display.classList.add('error');
-                    statusText.style.color = "var(--neon-red)";
-                    statusText.textContent = `❌ Access Denied (${res.status})`;
-                }
-                return res.json();
-            })
-            .then(payload => {
-                if (payload.verified) {
-                    content.innerHTML = `
-                        <div class="data-item"><span>Full Legal Holder:</span><strong>${payload.data.full_name}</strong></div>
-                        <div class="data-item"><span>NHIF Clearance:</span><strong>${payload.data.nhif_status}</strong></div>
-                        <div class="data-item"><span>Driving Classification:</span><strong>${payload.data.license_class}</strong></div>
-                        <div class="data-item"><span>Registered Bank Node:</span><strong>${payload.data.banking_institution}</strong></div>
-                        <div class="data-item"><span>Registry Status:</span><strong style="color:var(--neon-green)">${payload.data.account_status}</strong></div>
-                    `;
-                } else {
-                    content.innerHTML = `<p style="font-size:12px; color:var(--neon-red); margin:0;">${payload.message}</p>`;
-                }
-            })
-            .catch(err => {
-                display.classList.add('error');
-                statusText.style.color = "var(--neon-red)";
-                statusText.textContent = "🚨 Gateway Timeout Connection Error";
-                content.innerHTML = `<p style="font-size:12px; margin:0;">Could not establish parameters connection link.</p>`;
-            });
-        }
-    </script>
-</body>
-</html>
+            <div class="data-item"><span>Full Legal Holder:</span><strong>${payload.data.full_name}</strong></div>
+            <div class="data-item"><span>NHIF Clearance:</span><strong>${payload.data.nhif_status}</strong></div>
+            <div class="data-item"><span>Driving Classification:</span><strong>${payload.data.license_class}</strong></div>
+            <div class="data-item"><span>Registered Bank Node:</span><strong>${payload.data.banking_institution}</strong></div>
+            <div class="data-item"><span>Registry Status:</span><strong style="color:var(--neon-green)">${payload.data.account_status}</strong></div>
+        `;
+    } else {
+        content.innerHTML = `<p style="font-size:12px; color:var(--neon-red); margin:0;">${payload.message}</p>`;
+    }
+})
