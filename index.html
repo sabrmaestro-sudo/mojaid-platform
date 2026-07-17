@@ -3,222 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MojaID | Government Central Identity Grid</title>
+    <title>MojaID | Distributed Identity Aggregator</title>
     <style>
         :root {
-            --bg-dark: #020617;
-            --panel-glass: rgba(15, 23, 42, 0.6);
-            --border-glass: rgba(255, 255, 255, 0.08);
+            --bg-dark: #030712;
+            --surface-blur: rgba(17, 24, 39, 0.55);
             --neon-blue: #2563eb;
-            --neon-cyan: #06b6d4;
-            --neon-emerald: #10b981;
-            --neon-pink: #ec4899;
+            --cyan-glow: #38bdf8;
             --text-main: #f9fafb;
-            --text-secondary: #9ca3af;
-            --glow-accent: linear-gradient(135deg, #06b6d4 0%, #2563eb 100%);
-            --shadow-matrix: 0 25px 60px rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+            --text-muted: #9ca3af;
+            --border-glow: rgba(255, 255, 255, 0.06);
+            --gradient-accent: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
         }
-
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: radial-gradient(circle at 90% 10%, #1e1b4b 0%, #020617 60%);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: radial-gradient(circle at top right, #1e1b4b 0%, #030712 60%);
             color: var(--text-main);
             margin: 0;
-            padding: 0;
+            padding: 40px 20px;
             min-height: 100vh;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
             box-sizing: border-box;
         }
-
-        /* 🖥️ IMMERSIVE APPLICATION GRID STRUCTURE */
-        .workspace-shell {
-            max-width: 1080px;
-            width: 100%;
-            min-height: 680px;
-            background: var(--panel-glass);
-            backdrop-filter: blur(40px);
-            -webkit-backdrop-filter: blur(40px);
-            border: 1px solid var(--border-glass);
-            border-radius: 28px;
-            box-shadow: var(--shadow-matrix);
-            display: grid;
-            grid-template-columns: 300px 1fr;
-            overflow: hidden;
-            margin: 20px;
-            position: relative;
-        }
-
-        /* Neon Accent Strip */
-        .workspace-shell::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 4px;
-            background: var(--glow-accent);
-            z-index: 10;
-        }
-
-        /* 🧭 SIDE PANEL: BRANDING, STATUS & LOCALIZATION CONTROL */
-        .control-sidebar {
-            background: rgba(7, 10, 22, 0.6);
-            border-right: 1px solid var(--border-glass);
-            padding: 40px 30px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            box-sizing: border-box;
-        }
-
-        .brand-block h1 {
-            font-size: 32px;
-            font-weight: 900;
-            margin: 0;
-            letter-spacing: -1px;
-            text-transform: uppercase;
-        }
-
-        .brand-block h1 span { color: var(--neon-cyan); }
-        .brand-block p { margin: 6px 0 0 0; font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; }
-
-        .system-status-indicator {
-            margin-top: 30px;
-            background: rgba(16, 185, 129, 0.05);
-            border: 1px solid rgba(16, 185, 129, 0.15);
-            border-radius: 12px;
-            padding: 12px 16px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 11px;
-            font-weight: 800;
-            text-transform: uppercase;
-            color: var(--neon-emerald);
-            letter-spacing: 0.5px;
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            background: var(--neon-emerald);
-            border-radius: 50%;
-            box-shadow: 0 0 10px var(--neon-emerald);
-        }
-
-        /* 🌐 PREMIUM DEDICATED LANGUAGE CHOICE PANEL */
-        .localization-panel {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--border-glass);
-            border-radius: 16px;
-            padding: 16px;
-            margin-top: auto;
-        }
-
-        .localization-panel p {
-            margin: 0 0 12px 0;
-            font-size: 10px;
-            font-weight: 800;
-            text-transform: uppercase;
-            color: var(--text-secondary);
-            letter-spacing: 1px;
-        }
-
-        .lang-button-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .lang-btn {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border-glass);
-            color: var(--text-secondary);
-            padding: 10px;
-            border-radius: 10px;
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .lang-btn.active {
-            background: rgba(6, 182, 212, 0.1);
-            border-color: var(--neon-cyan);
-            color: var(--neon-cyan);
-            box-shadow: 0 0 15px rgba(6, 182, 212, 0.15);
-        }
-
-        .lang-btn:hover:not(.active) {
-            background: rgba(255, 255, 255, 0.08);
-            color: var(--text-main);
-        }
-
-        /* 📄 MAIN SYSTEM CONTENT PORTAL WORKSPACE */
-        .content-portal {
-            padding: 50px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            box-sizing: border-box;
-        }
-
-        /* 🔒 AUTH SECTION SUB CONTAINER CARD */
-        .auth-card-wrapper {
-            max-width: 440px;
-            width: 100%;
-            margin: 0 auto;
-        }
-
-        .auth-card-wrapper h2 { font-size: 24px; font-weight: 800; margin: 0 0 8px 0; letter-spacing: -0.5px; }
-        .auth-card-wrapper p { font-size: 14px; color: var(--text-secondary); margin: 0 0 35px 0; }
-
-        .auth-tabs { display: flex; gap: 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); margin-bottom: 30px; }
-        .auth-tab { font-size: 13px; font-weight: 700; text-transform: uppercase; padding-bottom: 12px; cursor: pointer; color: var(--text-secondary); border-bottom: 2px solid transparent; letter-spacing: 0.5px; transition: all 0.2s; }
-        .auth-tab.active { color: var(--neon-cyan); border-color: var(--neon-cyan); font-weight: 800; }
-
-        /* 🎛️ DASHBOARD NAVIGATION TAB BAR */
-        .wizard-tabs { display: grid; grid-template-columns: 1fr 1fr; background: rgba(0, 0, 0, 0.4); padding: 5px; border-radius: 14px; border: 1px solid var(--border-glass); margin-bottom: 40px; }
-        .wizard-btn { padding: 12px; background: transparent; color: var(--text-secondary); font-weight: 700; font-size: 12px; text-transform: uppercase; cursor: pointer; border-radius: 10px; text-align: center; border: none; letter-spacing: 0.5px; transition: all 0.2s; }
-        .wizard-btn.active { background: var(--glow-accent); color: #ffffff; font-weight: 800; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3); }
-
-        /* 📋 NOTIFICATION LABELS */
-        .alert-box { background: rgba(59, 130, 246, 0.06); color: #93c5fd; padding: 16px 20px; border-radius: 14px; margin-bottom: 35px; border: 1px solid rgba(59, 130, 246, 0.15); font-size: 13px; font-weight: 600; border-left: 4px solid var(--neon-blue); }
-        .error-msg { background: rgba(239, 68, 68, 0.06); color: #fca5a5; padding: 16px 20px; border-radius: 14px; margin-bottom: 35px; border: 1px solid rgba(239, 68, 68, 0.15); font-size: 13px; font-weight: 600; border-left: 4px solid var(--neon-red); }
-
-        /* 🗚 DATA INPUT ARCHITECTURE GRID */
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        .app-shell { background: var(--surface-blur); backdrop-filter: blur(30px); max-width: 640px; width: 100%; padding: 50px; border-radius: 32px; box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6); border: 1px solid var(--border-glow); box-sizing: border-box; }
+        .brand-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 40px; }
+        .logo-text { font-size: 26px; font-weight: 900; text-transform: uppercase; }
+        .logo-text span { color: var(--cyan-glow); }
+        .secure-badge { background: rgba(16, 185, 129, 0.1); color: #34d399; padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 700; border: 1px solid rgba(16, 185, 129, 0.2); }
+        .tab-menu { display: grid; grid-template-columns: 1fr 1fr; background: rgba(0,0,0,0.3); padding: 6px; border-radius: 14px; border: 1px solid var(--border-glow); margin-bottom: 35px; }
+        .tab-btn { padding: 12px; background: transparent; color: var(--text-muted); font-weight: 700; font-size: 13px; text-transform: uppercase; cursor: pointer; border-radius: 10px; text-align: center; }
+        .tab-btn.active { background: var(--gradient-accent); color: white; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .span-2 { grid-column: span 2; }
-        label { font-weight: 700; color: var(--text-secondary); display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 10px; }
-        input[type='text'], select { width: 100%; padding: 16px 20px; background: rgba(5, 7, 15, 0.6); color: var(--text-main); border: 1px solid var(--border-glass); border-radius: 14px; box-sizing: border-box; font-size: 15px; transition: all 0.3s ease; }
-        input[type='text']:focus, select:focus { outline: none; border-color: var(--neon-cyan); box-shadow: 0 0 15px rgba(6, 182, 212, 0.15); background: rgba(5, 7, 15, 0.8); }
+        label { font-weight: 700; color: var(--text-muted); display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 8px; }
+        input[type='text'], select { width: 100%; padding: 15px 18px; background: rgba(5, 7, 15, 0.7); color: var(--text-main); border: 1px solid var(--border-glow); border-radius: 14px; box-sizing: border-box; font-size: 15px; }
+        .btn-action { background: var(--gradient-accent); color: white; border: none; padding: 18px; font-size: 16px; font-weight: 800; border-radius: 14px; cursor: pointer; width: 100%; margin-top: 35px; box-shadow: 0 8px 25px rgba(37, 99, 235, 0.25); text-transform: uppercase; }
+        .alert-box { background: rgba(59, 130, 246, 0.1); color: #93c5fd; padding: 16px 20px; border-radius: 14px; margin-bottom: 30px; border: 1px solid rgba(59, 130, 246, 0.2); font-size: 14px; font-weight: 600; border-left: 5px solid var(--neon-blue); }
+        .error-msg { background: rgba(239, 68, 68, 0.1); color: #fca5a5; padding: 16px 20px; border-radius: 14px; margin-bottom: 30px; border: 1px solid rgba(239, 68, 68, 0.2); font-size: 14px; font-weight: 600; border-left: 5px solid #ef4444; }
         
-        .btn-action { background: var(--glow-accent); color: white; border: none; padding: 18px; font-size: 14px; font-weight: 800; border-radius: 14px; cursor: pointer; width: 100%; margin-top: 30px; box-shadow: 0 8px 25px rgba(37, 99, 235, 0.25); text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s; }
-        .btn-action:hover { transform: translateY(-1px); box-shadow: 0 12px 30px rgba(6, 182, 212, 0.35); }
-
-        /* 🛡️ SECURITY CREDENTIAL MATRIX DISPLAY SHEET */
-        .qr-card-overlay { background: rgba(9, 13, 24, 0.5); padding: 35px; border-radius: 24px; border: 1px solid rgba(16, 185, 129, 0.2); text-align: center; margin-bottom: 40px; box-shadow: 0 15px 40px rgba(0,0,0,0.4); }
-        .qr-element-container { background: #ffffff; padding: 16px; display: inline-block; border-radius: 20px; margin: 20px auto; box-shadow: 0 15px 35px rgba(0,0,0,0.5); width: 172px; height: 172px; box-sizing: border-box; }
-        .qr-element-container img { display: block; width: 140px; height: 140px; }
+        .qr-card-overlay { background: rgba(15, 23, 42, 0.6); padding: 25px; border-radius: 20px; border: 1px solid rgba(16, 185, 129, 0.3); text-align: center; margin-bottom: 35px; box-shadow: 0 0 30px rgba(16, 185, 129, 0.1); }
+        
+        /* 📱 CLEAN DISPLAY WITH BUILT-IN SIZE SAFEGUARDS FOR IMAGES */
+        .qr-element-container { 
+            background: #ffffff; 
+            padding: 16px; 
+            display: inline-block; 
+            border-radius: 16px; 
+            margin: 15px auto; 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2); 
+            width: 172px;
+            height: 172px;
+            box-sizing: border-box;
+        }
+        .qr-element-container img {
+            display: block;
+            width: 140px;
+            height: 140px;
+        }
     </style>
 </head>
 <body>
-
-    <div class="workspace-shell">
+    <div class="app-shell">
+        <div class="brand-meta">
+            <div class="logo-text">Moja<span>ID</span></div>
+            <div class="secure-badge">🛡️ E2EE Protocol Secure</div>
+        </div>
         
-        <!--🧭 CONTROL SIDEBAR (ALWAYS VISIBLE) -->
-        <div class="control-sidebar">
-            <div class="brand-block">
-                <h1>Moja<span>ID</span></h1>
-                <p id="lblSubTitle">Sovereign Identity Aggregator</p>
+        <!-- RENDERING THE FLOATING WALLET TOKEN IF ACTIVATED BY THE BACKEND -->
+        {% if qr_data %}
+            <div class="qr-card-overlay">
+                <h3 style="color:#34d399; margin:0 0 5px 0;">🎉 MojaID Synchronization Successful!</h3>
+                <p style="color:var(--text-muted); font-size:13px; margin:0;">Flash this secure QR asset at any accredited hospital or financial node terminal.</p>
                 
-                <div class="system-status-indicator">
-                    <div class="status-dot"></div>
-                    <span id="lblSecureBadge">E2EE Ledger Secure</span>
+                <!-- FIX: Rendering the Base64 image layout using the exact image variable -->
+                <div class="qr-element-container">
+                    <img src="{{ qr_data }}" alt="MojaID QR Matrix Token">
+                </div>
+                
+                <!-- CLEAN LABEL FOR YOUR FOOTER SYSTEM -->
+                <div style="font-family:monospace; font-size:11px; color:var(--text-muted); margin-top: 10px;">🛡️ DECENTRALIZED IDENTITY REGISTRY TOKEN GENERATED</div>
+            </div>
+        {% endif %}
+
+        <div class="tab-menu">
+            <div class="tab-btn active" id="profileTab" onclick="switchSection('demographics')">1. Identity Core</div>
+            <div class="tab-btn" id="vaultTab" onclick="switchSection('attachments')">2. Aggregation Vault</div>
+        </div>
+
+        {% if alert_msg %}<div class="alert-box">{{ alert_msg }}</div>{% endif %}
+        {% if error_msg %}<div class="error-msg">{{ error_msg }}</div>{% endif %}
+        
+        <form method="POST">
+            <div id="demographicsSection" class="form-grid">
+                <div class="span-2"><label>Full Legal Entity Name</label><input type='text' name='full_name' placeholder='Juma Hamisi' required></div>
+                <div class="span-2"><label>Sovereign NIDA Identifier</label><input type='text' name='nida_id' placeholder='199XXXXXXXXXXXX...' required></div>
+                <div>
+                    <label>Payment Router Selection</label>
+                    <select name="network">
+                        <option value="M-Pesa">Vodacom M-Pesa</option>
+                        <option value="Tigo Pesa">Tigo Pesa</option>
+                        <option value="Airtel Money">Airtel Money</option>
+                        <option value="HaloPesa">HaloPesa</option>
+                    </select>
+                </div>
+                <div><label>Verification Account Msisdn</label><input type='text' name='phone' placeholder='07XXXXXXXX' required></div>
+                <div class="span-2" style="text-align: right; margin-top: 15px;">
+                    <button type="button" class="btn-action" style="margin-top:0; width:auto; padding:12px 25px;" onclick="switchSection('attachments')">Proceed to Vault ➔</button>
                 </div>
             </div>
 
-            <!-- 🌐 PREMIUM LANGUAGE CHOICE PANEL (ALWAYS VISIBLE) -->
-            <div class="localization-panel">
-                <p id="lblLangSelectHeader">Select Language / Lugha</p>
-                <div class="lang-button-group">
-                    <button class="lang-btn active" id="btnLangEn" onclick="switchLanguageEngine('en')">EN</button>
+            <div id="attachmentsSection" class="form-grid" style="display: none;">
+                <div class="span-2"><label>National Health Insurance (NHIF)</label><input type='text' name='nhif' placeholder='e.g., NHIF-883100'></div>
+                <div class="span-2"><label>Driving Registry Classification</label><input type='text' name='license' placeholder='e.g., Class A, B'></div>
+                <div class="span-2"><label>Commercial Banking Node Integration</label><input type='text' name='bank' placeholder='e.g., CRDB Bank'></div>
+                <div class="span-2"><button type="submit" class="btn-action">🔒 Compile & Authorize Sync (500 TZS)</button></div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function switchSection(target) {
+            const demoForm = document.getElementById('demographicsSection');
+            const vaultForm = document.getElementById('attachmentsSection');
+            const t1 = document.getElementById('profileTab');
+            const t2 = document.getElementById('vaultTab');
+            
+            if (target === 'demographics') {
+                demoForm.style.display = 'grid';
+                vaultForm.style.display = 'none';
+                t1.classList.add('active');
+                t2.classList.remove('active');
+            } else {
+                demoForm.style.display = 'none';
+                vaultForm.style.display = 'grid';
+                t1.classList.remove('active');
+                t2.classList.add('active');
+            }
+        }
+    </script>
+</body>
+</html>
