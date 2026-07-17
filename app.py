@@ -28,6 +28,17 @@ RECORDS_MEM_POOL = [
 SECRET_ADMIN_TOKEN = "fungua-mojaid-revenue-2026"
 B2B_API_TOKEN = "mojaid_live_b2b_token_xyz789"
 
+# 💳 NEW: PARTNER WALLET SYSTEM (Preloaded with 5,000 TZS for testing)
+B2B_PARTNER_WALLETS = {
+    "mojaid_live_b2b_token_xyz789": {
+        "institution_name": "Muhimbili National Hospital Node",
+        "balance": 5000
+    }
+}
+
+# Variable tracking total processing revenue collected from B2B verifications
+B2B_VERIFICATION_REVENUE = 0
+
 def encrypt_identity_data(raw_text):
     return hashlib.sha256(raw_text.encode()).hexdigest()
 
@@ -82,21 +93,48 @@ def index():
 def terminal_portal():
     return render_template("terminal.html")
 
+# --- 🔌 UPDATED: B2B VERIFY ROUTE WITH BILLING SYSTEM DEDUCTIONS ---
 @app.route("/api/v1/verify", methods=["GET"])
 def b2b_verify_api():
+    global B2B_VERIFICATION_REVENUE
+    
+    # 1. Authenticate check: Validate partner token existence
     client_auth_token = request.headers.get("X-MojaID-Auth") or request.args.get("auth_token")
-    if client_auth_token != B2B_API_TOKEN:
+    if client_auth_token not in B2B_PARTNER_WALLETS:
         return jsonify({"status": "ERROR", "message": "Authentication Failed: Invalid API Token"}), 401
+        
+    partner = B2B_PARTNER_WALLETS[client_auth_token]
+    
+    # 2. Check financial limits: Does the hospital have at least 500 TZS?
+    VERIFICATION_COST = 500
+    if partner["balance"] < VERIFICATION_COST:
+        return jsonify({
+            "status": "BILLING_ERROR", 
+            "message": f"Insufficient pre-funded token balance. Remaining: {partner['balance']} TZS. Please top up your node wallet."
+        }), 402
         
     scanned_hash = request.args.get("qr_hash")
     if not scanned_hash:
         return jsonify({"status": "ERROR", "message": "Missing Parameter: qr_hash required"}), 400
         
+    # 3. Query ledger pool memory blocks
     for profile in RECORDS_MEM_POOL:
         if profile["hash"] == scanned_hash:
+            # 💳 CORE DEDUCTION EXECUTION ENGINE
+            partner["balance"] -= VERIFICATION_COST
+            B2B_VERIFICATION_REVENUE += VERIFICATION_COST
+            
+            print(f"💰 [BILLING DEBIT] 500 TZS deducted from {partner['institution_name']}. New balance: {partner['balance']} TZS.")
+            
+            # Return profile bundled payload with remaining billing parameters attached
             return jsonify({
                 "status": "SUCCESS",
                 "verified": True,
+                "billing": {
+                    "charge": VERIFICATION_COST,
+                    "remaining_balance": partner["balance"],
+                    "institution": partner["institution_name"]
+                },
                 "data": {
                     "full_name": profile["name"],
                     "nhif_status": profile["nhif"],
@@ -112,8 +150,11 @@ def b2b_verify_api():
 def secret_admin(token):
     if token != SECRET_ADMIN_TOKEN:
         return "🔒 Access Denied", 403
-    running_total = sum(p.get("fee", 500) for p in RECORDS_MEM_POOL)
-    return render_template("admin.html", saved_profiles=RECORDS_MEM_POOL, total_count=len(RECORDS_MEM_POOL), total_revenue=running_total)
+    # Combined calculations mapping both customer registration fees and B2B lookups
+    customer_registration_fees = sum(p.get("fee", 500) for p in RECORDS_MEM_POOL)
+    combined_net_worth = customer_registration_fees + B2B_VERIFICATION_REVENUE
+    
+    return render_template("admin.html", saved_profiles=RECORDS_MEM_POOL, total_count=len(RECORDS_MEM_POOL), total_revenue=combined_net_worth)
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
