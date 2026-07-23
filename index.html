@@ -229,3 +229,33 @@
                 </div>
                 <div class="span-2">
                     <label>Sovereign NIDA Identifier</label>
+                    /**
+ * Switches the active section and updates tab navigation styling.
+ * @param {string} target - The target section to display ('demographics' or 'attachments').
+ */
+function switchSection(target) {
+    const demoForm = document.getElementById('demographicsSection');
+    const vaultForm = document.getElementById('attachmentsSection');
+    const profileTab = document.getElementById('profileTab');
+    const vaultTab = document.getElementById('vaultTab');
+
+    // Ensure all elements exist before manipulating style to prevent runtime errors
+    if (!demoForm || !vaultForm || !profileTab || !vaultTab) {
+        console.warn('One or more required DOM elements were not found.');
+        return;
+    }
+
+    if (target === 'demographics') {
+        demoForm.style.display = 'grid';
+        vaultForm.style.display = 'none';
+        profileTab.classList.add('active');
+        vaultTab.classList.remove('active');
+    } else if (target === 'attachments') {
+        demoForm.style.display = 'none';
+        vaultForm.style.display = 'grid';
+        profileTab.classList.remove('active');
+        vaultTab.classList.add('active');
+    }
+}
+
+                    
