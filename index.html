@@ -3,145 +3,228 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MojaID | Distributed Identity Aggregator</title>
+    <title>3D Node Control Center</title>
     <style>
+        /* Essential structure & styling to make your JavaScript function immediately */
         :root {
-            --bg-dark: #030712;
-            --surface-blur: rgba(17, 24, 39, 0.55);
-            --neon-blue: #2563eb;
-            --cyan-glow: #38bdf8;
-            --text-main: #f9fafb;
-            --text-muted: #9ca3af;
-            --border-glow: rgba(255, 255, 255, 0.06);
-            --gradient-accent: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            --bg-color: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --primary: #3b82f6;
+            --text: #f8fafc;
         }
-        body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background: radial-gradient(circle at top right, #1e1b4b 0%, #030712 60%);
-            color: var(--text-main);
+
+        body, html {
             margin: 0;
-            padding: 40px 20px;
-            min-height: 100vh;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: var(--bg-color);
+            font-family: system-ui, -apple-system, sans-serif;
+            color: var(--text);
             display: flex;
-            flex-direction: column;
             align-items: center;
-            box-sizing: border-box;
+            justify-content: center;
         }
-        .app-shell { background: var(--surface-blur); backdrop-filter: blur(30px); max-width: 640px; width: 100%; padding: 50px; border-radius: 32px; box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6); border: 1px solid var(--border-glow); box-sizing: border-box; }
-        .brand-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 40px; }
-        .logo-text { font-size: 26px; font-weight: 900; text-transform: uppercase; }
-        .logo-text span { color: var(--cyan-glow); }
-        .secure-badge { background: rgba(16, 185, 129, 0.1); color: #34d399; padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 700; border: 1px solid rgba(16, 185, 129, 0.2); }
-        .tab-menu { display: grid; grid-template-columns: 1fr 1fr; background: rgba(0,0,0,0.3); padding: 6px; border-radius: 14px; border: 1px solid var(--border-glow); margin-bottom: 35px; }
-        .tab-btn { padding: 12px; background: transparent; color: var(--text-muted); font-weight: 700; font-size: 13px; text-transform: uppercase; cursor: pointer; border-radius: 10px; text-align: center; }
-        .tab-btn.active { background: var(--gradient-accent); color: white; }
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .span-2 { grid-column: span 2; }
-        label { font-weight: 700; color: var(--text-muted); display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 8px; }
-        input[type='text'], select { width: 100%; padding: 15px 18px; background: rgba(5, 7, 15, 0.7); color: var(--text-main); border: 1px solid var(--border-glow); border-radius: 14px; box-sizing: border-box; font-size: 15px; }
-        .btn-action { background: var(--gradient-accent); color: white; border: none; padding: 18px; font-size: 16px; font-weight: 800; border-radius: 14px; cursor: pointer; width: 100%; margin-top: 35px; box-shadow: 0 8px 25px rgba(37, 99, 235, 0.25); text-transform: uppercase; }
-        .alert-box { background: rgba(59, 130, 246, 0.1); color: #93c5fd; padding: 16px 20px; border-radius: 14px; margin-bottom: 30px; border: 1px solid rgba(59, 130, 246, 0.2); font-size: 14px; font-weight: 600; border-left: 5px solid var(--neon-blue); }
-        .error-msg { background: rgba(239, 68, 68, 0.1); color: #fca5a5; padding: 16px 20px; border-radius: 14px; margin-bottom: 30px; border: 1px solid rgba(239, 68, 68, 0.2); font-size: 14px; font-weight: 600; border-left: 5px solid #ef4444; }
-        
-        .qr-card-overlay { background: rgba(15, 23, 42, 0.6); padding: 25px; border-radius: 20px; border: 1px solid rgba(16, 185, 129, 0.3); text-align: center; margin-bottom: 35px; box-shadow: 0 0 30px rgba(16, 185, 129, 0.1); }
-        
-        /* 📱 CLEAN DISPLAY WITH BUILT-IN SIZE SAFEGUARDS FOR IMAGES */
-        .qr-element-container { 
-            background: #ffffff; 
-            padding: 16px; 
-            display: inline-block; 
-            border-radius: 16px; 
-            margin: 15px auto; 
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2); 
-            width: 172px;
-            height: 172px;
-            box-sizing: border-box;
+
+        /* Three.js canvas container background */
+        #webgl-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
         }
-        .qr-element-container img {
+
+        /* 3D Parallax Perspective Base Container */
+        .wrapper {
+            perspective: 1000px;
+            z-index: 2;
+        }
+
+        /* Interactive Card targeted by Part B */
+        #interactiveCard {
+            width: 420px;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            transform-style: preserve-3d;
+        }
+
+        /* Slideable tab header decoration */
+        .tabs-nav {
+            position: relative;
+            display: flex;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+
+        .tab-btn {
+            flex: 1;
+            background: none;
+            border: none;
+            padding: 0.75rem;
+            color: #94a3b8;
+            font-weight: 600;
+            cursor: pointer;
+            z-index: 2;
+            transition: color 0.3s ease;
+        }
+
+        /* Tab slider targeted by Part C */
+        #tabSlider {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 50%;
+            height: 100%;
+            background: var(--primary);
+            border-radius: 8px;
+            z-index: 1;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Multi-step Panels setup */
+        .panel {
+            display: none;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        /* Active panels triggered by switchStep() */
+        .panel.active {
             display: block;
-            width: 140px;
-            height: 140px;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .input-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-bottom: 0.35rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            color: #fff;
+            box-sizing: border-box;
+        }
+
+        /* Main interaction trigger button */
+        #actionButton {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: background 0.2s;
+        }
+
+        #actionButton:hover {
+            background: #2563eb;
         }
     </style>
+    <!-- Include Three.js via CDN for Part A logic -->
+    <script src="https://cloudflare.com"></script>
 </head>
 <body>
-    <div class="app-shell">
-        <div class="brand-meta">
-            <div class="logo-text">Moja<span>ID</span></div>
-            <div class="secure-badge">🛡️ E2EE Protocol Secure</div>
+
+    <!-- Container where the Three.js renderer attaches -->
+    <div id="webgl-bg"></div>
+
+    <div class="wrapper">
+        <!-- Interactive Card Frame Component -->
+        <div id="interactiveCard">
+            
+            <!-- Step Navigation Tabs Layer -->
+            <div class="tabs-nav">
+                <div id="tabSlider"></div>
+                <button id="btnTab1" class="tab-btn active" onclick="switchStep(1)">Step 1</button>
+                <button id="btnTab2" class="tab-btn" onclick="switchStep(2)">Step 2</button>
+            </div>
+
+            
+            <div id="stepPanel1" class="panel active">
+                <div class="input-group">
+                    <label for="fullName">Full Name</label>
+                    
+                </div>
+                <div class="input-group">
+                    <label for="nidaId">NIDA National ID</label>
+                    <input type="text" id="nidaId" placeholder="National Identification Number">
+                </div>
+                <div class="input-group">
+                    <label for="router">Router Gateway</label>
+                    <input type="text" id="router" placeholder="192.168.1.1">
+                </div>
+                <div class="input-group">
+                    <label for="msisdn">MSISDN Phone Line</label>
+                    <input type="tel" id="msisdn" placeholder="e.g. +255...">
+                </div>
+            </div>
+
+            <!-- STEP 2 PANEL: Core Authorization Return Fields -->
+            <div id="stepPanel2" class="panel">
+                <div class="input-group">
+                    <label for="vaultStatus">Node Sync Status</label>
+                    <input type="text" id="vaultStatus" readonly value="🔴 Awaiting Gateway Synchronization">
+                </div>
+                <div class="input-group">
+                    <label for="backendKey">Node Authentication Token</label>
+                    <input type="text" id="backendKey" readonly placeholder="TOKEN-PENDING-SECURE">
+                </div>
+            </div>
+
+            <!-- Direct Action Execution Mechanism -->
+            <button id="actionButton">
+                <span id="btnText">Connect to Core</span>
+            </button>
+
         </div>
-        
-        <!-- RENDERING THE FLOATING WALLET TOKEN IF ACTIVATED BY THE BACKEND -->
-        {% if qr_data %}
-            <div class="qr-card-overlay">
-                <h3 style="color:#34d399; margin:0 0 5px 0;">🎉 MojaID Synchronization Successful!</h3>
-                <p style="color:var(--text-muted); font-size:13px; margin:0;">Flash this secure QR asset at any accredited hospital or financial node terminal.</p>
-                
-                <!-- FIX: Rendering the Base64 image layout using the exact image variable -->
-                <div class="qr-element-container">
-                    <img src="{{ qr_data }}" alt="MojaID QR Matrix Token">
-                </div>
-                
-                <!-- CLEAN LABEL FOR YOUR FOOTER SYSTEM -->
-                <div style="font-family:monospace; font-size:11px; color:var(--text-muted); margin-top: 10px;">🛡️ DECENTRALIZED IDENTITY REGISTRY TOKEN GENERATED</div>
-            </div>
-        {% endif %}
-
-        <div class="tab-menu">
-            <div class="tab-btn active" id="profileTab" onclick="switchSection('demographics')">1. Identity Core</div>
-            <div class="tab-btn" id="vaultTab" onclick="switchSection('attachments')">2. Aggregation Vault</div>
-        </div>
-
-        {% if alert_msg %}<div class="alert-box">{{ alert_msg }}</div>{% endif %}
-        {% if error_msg %}<div class="error-msg">{{ error_msg }}</div>{% endif %}
-        
-        <form method="POST">
-            <div id="demographicsSection" class="form-grid">
-                <div class="span-2"><label>Full Legal Entity Name</label><input type='text' name='full_name' placeholder='Juma Hamisi' required></div>
-                <div class="span-2"><label>Sovereign NIDA Identifier</label><input type='text' name='nida_id' placeholder='199XXXXXXXXXXXX...' required></div>
-                <div>
-                    <label>Payment Router Selection</label>
-                    <select name="network">
-                        <option value="M-Pesa">Vodacom M-Pesa</option>
-                        <option value="Tigo Pesa">Tigo Pesa</option>
-                        <option value="Airtel Money">Airtel Money</option>
-                        <option value="HaloPesa">HaloPesa</option>
-                    </select>
-                </div>
-                <div><label>Verification Account Msisdn</label><input type='text' name='phone' placeholder='07XXXXXXXX' required></div>
-                <div class="span-2" style="text-align: right; margin-top: 15px;">
-                    <button type="button" class="btn-action" style="margin-top:0; width:auto; padding:12px 25px;" onclick="switchSection('attachments')">Proceed to Vault ➔</button>
-                </div>
-            </div>
-
-            <div id="attachmentsSection" class="form-grid" style="display: none;">
-                <div class="span-2"><label>National Health Insurance (NHIF)</label><input type='text' name='nhif' placeholder='e.g., NHIF-883100'></div>
-                <div class="span-2"><label>Driving Registry Classification</label><input type='text' name='license' placeholder='e.g., Class A, B'></div>
-                <div class="span-2"><label>Commercial Banking Node Integration</label><input type='text' name='bank' placeholder='e.g., CRDB Bank'></div>
-                <div class="span-2"><button type="submit" class="btn-action">🔒 Compile & Authorize Sync (500 TZS)</button></div>
-            </div>
-        </form>
     </div>
 
+    <!-- Script Mounting Hook -->
     <script>
-        function switchSection(target) {
-            const demoForm = document.getElementById('demographicsSection');
-            const vaultForm = document.getElementById('attachmentsSection');
-            const t1 = document.getElementById('profileTab');
-            const t2 = document.getElementById('vaultTab');
-            
-            if (target === 'demographics') {
-                demoForm.style.display = 'grid';
-                vaultForm.style.display = 'none';
-                t1.classList.add('active');
-                t2.classList.remove('active');
-            } else {
-                demoForm.style.display = 'none';
-                vaultForm.style.display = 'grid';
-                t1.classList.remove('active');
-                t2.classList.add('active');
-            }
+        // Setup Three.js boilerplate dependencies to link with your Part A logic script
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('webgl-bg').appendChild(renderer.domElement);
+
+        // Generate mock points array for your BufferAttribute configuration
+        const particleCount = 1500;
+        const positions = new Float32Array(particleCount * 3);
+        for(let i=0; i<particleCount*3; i++) {
+            positions[i] = (Math.random() - 0.5) * 10;
         }
+        const geometry = new THREE.BufferGeometry();
+
+        // -------------------------------------------------------------
+        // PLACE THE COMBINED JAVASCRIPT ENGINE (PART A, B, C) BELOW HERE
+        // -------------------------------------------------------------
     </script>
 </body>
 </html>
