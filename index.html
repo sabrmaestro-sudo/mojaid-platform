@@ -3,300 +3,228 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Core Node Authorization</title>
-    <!-- Tailwind CSS for modern layout architecture -->
-    <script src="https://jsdelivr.net"></script>
-    <!-- Three.js Library Dependency -->
-    <script src="https://cloudflare.com"></script>
+    <title>3D Node Control Center</title>
     <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-            background-color: #0b0f19;
-            font-family: system-ui, -apple-system, sans-serif;
+        /* Essential structure & styling to make your JavaScript function immediately */
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --primary: #3b82f6;
+            --text: #f8fafc;
         }
-        /* Fixed background element layer for Three.js particles */
-        #bgCanvas {
-            position: fixed;
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: var(--bg-color);
+            font-family: system-ui, -apple-system, sans-serif;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Three.js canvas container background */
+        #webgl-bg {
+            position: absolute;
             top: 0;
             left: 0;
-            width: 100vw;
-            height: 100vh;
+            width: 100%;
+            height: 100%;
             z-index: 1;
             pointer-events: none;
         }
-        /* Interface wrapper layer */
-        .ui-layer {
-            position: relative;
-            z-index: 10;
+
+        /* 3D Parallax Perspective Base Container */
+        .wrapper {
+            perspective: 1000px;
+            z-index: 2;
         }
-        /* Advanced Glassmorphism Styling UI Elements */
-        .glass-panel {
-            background: rgba(15, 23, 42, 0.45);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+
+        /* Interactive Card targeted by Part B */
+        #interactiveCard {
+            width: 420px;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 2rem;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            transform-style: preserve-3d;
         }
-        /* Smooth multi-step panel card sliding animations */
-        .step-panel {
+
+        /* Slideable tab header decoration */
+        .tabs-nav {
+            position: relative;
+            display: flex;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+
+        .tab-btn {
+            flex: 1;
+            background: none;
+            border: none;
+            padding: 0.75rem;
+            color: #94a3b8;
+            font-weight: 600;
+            cursor: pointer;
+            z-index: 2;
+            transition: color 0.3s ease;
+        }
+
+        /* Tab slider targeted by Part C */
+        #tabSlider {
             position: absolute;
-            width: 100%;
             top: 0;
             left: 0;
+            width: 50%;
+            height: 100%;
+            background: var(--primary);
+            border-radius: 8px;
+            z-index: 1;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Multi-step Panels setup */
+        .panel {
+            display: none;
             opacity: 0;
-            transform: scale(0.95);
-            pointer-events: none;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateY(10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
         }
-        .step-panel.active {
-            position: relative;
+
+        /* Active panels triggered by switchStep() */
+        .panel.active {
+            display: block;
             opacity: 1;
-            transform: scale(1);
-            pointer-events: auto;
+            transform: translateY(0);
         }
-        /* Input state transitions */
-        .form-input {
-            background: rgba(255, 255, 255, 0.03);
+
+        .input-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-bottom: 0.35rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(15, 23, 42, 0.6);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #f8fafc;
-            transition: all 0.2s ease;
+            border-radius: 6px;
+            color: #fff;
+            box-sizing: border-box;
         }
-        .form-input:focus {
-            outline: none;
-            border-color: #3b82f6;
-            background: rgba(255, 255, 255, 0.06);
-            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+
+        /* Main interaction trigger button */
+        #actionButton {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: background 0.2s;
+        }
+
+        #actionButton:hover {
+            background: #2563eb;
         }
     </style>
+    <!-- Include Three.js via CDN for Part A logic -->
+    <script src="https://cloudflare.com"></script>
 </head>
-<body class="flex items-center justify-center min-h-screen text-slate-200 antialiased p-4">
+<body>
 
-    <!-- Background Space Matrix Element Viewport -->
-    <div id="bgCanvas"></div>
+    <!-- Container where the Three.js renderer attaches -->
+    <div id="webgl-bg"></div>
 
-    <!-- UI Interaction Matrix Space -->
-    <main class="ui-layer w-full max-w-md perspective-1000">
-        
-        <!-- Interactive Hover Card Block (Targeted by PART B) -->
-        <div id="interactiveCard" class="glass-panel rounded-3xl p-6 md:p-8 transform-gpu transition-all duration-100">
+    <div class="wrapper">
+        <!-- Interactive Card Frame Component -->
+        <div id="interactiveCard">
             
-            <!-- Tab Headers Slider Sub-Layer -->
-            <div class="relative flex bg-slate-950/60 p-1.5 rounded-xl mb-8 border border-white/5 overflow-hidden">
-                <!-- Sliding Selector Bar -->
-                <div id="tabSlider" class="absolute top-1.5 bottom-1.5 left-1.5 w-[calc(50%-6px)] bg-blue-600/90 rounded-lg shadow-md transition-transform duration-300 ease-out transform translate-x-0"></div>
-                
-                <!-- Tab Switching Buttons -->
-                <button id="btnTab1" onclick="switchStep(1)" class="relative z-10 w-1/2 py-2 text-sm font-semibold tracking-wide text-center cursor-pointer transition-colors active">
-                    Step 1: Identity
-                </button>
-                <button id="btnTab2" onclick="switchStep(2)" class="relative z-10 w-1/2 py-2 text-sm font-semibold tracking-wide text-center cursor-pointer transition-colors">
-                    Step 2: Sync
-                </button>
+            <!-- Step Navigation Tabs Layer -->
+            <div class="tabs-nav">
+                <div id="tabSlider"></div>
+                <button id="btnTab1" class="tab-btn active" onclick="switchStep(1)">Step 1</button>
+                <button id="btnTab2" class="tab-btn" onclick="switchStep(2)">Step 2</button>
             </div>
 
-            <!-- Content Transmission Form State Manager -->
-            <div class="relative overflow-hidden min-h-[340px]">
-                
-                <!-- STEP 1: IDENTITY METADATA PANEL -->
-                <div id="stepPanel1" class="step-panel active space-y-4">
-                    <div class="mb-4">
-                        <h2 class="text-xl font-bold text-white tracking-tight">Identity Pipeline</h2>
-                        <p class="text-xs text-slate-400 mt-1">Bind your metadata parameters onto the secure mesh layer.</p>
-                    </div>
+            
+            <div id="stepPanel1" class="panel active">
+                <div class="input-group">
+                    <label for="fullName">Full Name</label>
                     
-                    <div class="space-y-1">
-                        <label for="fullName" class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Full Name</label>
-                        <input type="text" id="fullName" class="form-input w-full px-4 py-2.5 rounded-xl text-sm" placeholder="John Doe" autocomplete="off">
-                    </div>
-                    
-                    <div class="space-y-1">
-                        <label for="nidaId" class="text-xs font-semibold text-slate-400 uppercase tracking-wider">NIDA Identification</label>
-                        <input type="text" id="nidaId" class="form-input w-full px-4 py-2.5 rounded-xl text-sm" placeholder="199XXXXXXXXXXXXXXX" autocomplete="off">
-                    </div>
-                    
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="space-y-1">
-                            <label for="router" class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Router Gateway</label>
-                            <input type="text" id="router" class="form-input w-full px-4 py-2.5 rounded-xl text-sm" placeholder="192.168.1.1" autocomplete="off">
-                        </div>
-                        <div class="space-y-1">
-                            <label for="msisdn" class="text-xs font-semibold text-slate-400 uppercase tracking-wider">MSISDN Phone</label>
-                            <input type="tel" id="msisdn" class="form-input w-full px-4 py-2.5 rounded-xl text-sm" placeholder="+255..." autocomplete="off">
-                        </div>
-                    </div>
                 </div>
-
-                <!-- STEP 2: ENCRYPTED SYNC SECURE PANEL -->
-                <div id="stepPanel2" class="step-panel space-y-4">
-                    <div class="mb-4">
-                        <h2 class="text-xl font-bold text-white tracking-tight">Secure Vault Status</h2>
-                        <p class="text-xs text-slate-400 mt-1">Awaiting real-time pipeline key ingestion confirmation parameters.</p>
-                    </div>
-
-                    <div class="space-y-1">
-                        <label for="vaultStatus" class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Vault Core Status</label>
-                        <input type="text" id="vaultStatus" class="form-input w-full px-4 py-2.5 rounded-xl text-sm bg-slate-900/50 border-white/5 cursor-not-allowed text-yellow-400 font-medium" value="🟡 Awaiting Initial Uplink Node" readonly>
-                    </div>
-
-                    <div class="space-y-1">
-                        <label for="backendKey" class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Generated Node Key Token</label>
-                        <input type="text" id="backendKey" class="form-input w-full px-4 py-2.5 rounded-xl text-sm font-mono tracking-wider bg-slate-900/50 border-white/5 cursor-not-allowed text-blue-400" value="NODE-KEY-PENDING" readonly>
-                    </div>
-                    
-                    <div class="p-3 bg-blue-950/30 border border-blue-500/20 rounded-xl text-xs text-blue-300 leading-relaxed">
-                        Your identification token package remains locally isolated within your 3D canvas viewport rendering instance until you finalize verification processing parameters.
-                    </div>
+                <div class="input-group">
+                    <label for="nidaId">NIDA National ID</label>
+                    <input type="text" id="nidaId" placeholder="National Identification Number">
                 </div>
-
+                <div class="input-group">
+                    <label for="router">Router Gateway</label>
+                    <input type="text" id="router" placeholder="192.168.1.1">
+                </div>
+                <div class="input-group">
+                    <label for="msisdn">MSISDN Phone Line</label>
+                    <input type="tel" id="msisdn" placeholder="e.g. +255...">
+                </div>
             </div>
 
-            <!-- Execution Action Call Button Layer -->
-            <button id="actionButton" class="w-full mt-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold py-3 px-4 rounded-xl shadow-lg shadow-blue-900/30 transition duration-200 active:scale-[0.98] cursor-pointer flex items-center justify-center space-x-2 text-sm tracking-wide">
+            <!-- STEP 2 PANEL: Core Authorization Return Fields -->
+            <div id="stepPanel2" class="panel">
+                <div class="input-group">
+                    <label for="vaultStatus">Node Sync Status</label>
+                    <input type="text" id="vaultStatus" readonly value="🔴 Awaiting Gateway Synchronization">
+                </div>
+                <div class="input-group">
+                    <label for="backendKey">Node Authentication Token</label>
+                    <input type="text" id="backendKey" readonly placeholder="TOKEN-PENDING-SECURE">
+                </div>
+            </div>
+
+            <!-- Direct Action Execution Mechanism -->
+            <button id="actionButton">
                 <span id="btnText">Connect to Core</span>
             </button>
 
         </div>
-    </main>
+    </div>
 
-    <!-- Embedded Integrated Function Processing Script Logic -->
+    <!-- Script Mounting Hook -->
     <script>
-        // --- PART A: THREE.JS BACKGROUND SCENE GENERATION ---
-geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        // Setup Three.js boilerplate dependencies to link with your Part A logic script
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('webgl-bg').appendChild(renderer.domElement);
 
-const material = new THREE.PointsMaterial({
-    color: 0xffffff,
-    size: 0.02,
-    transparent: true,
-    opacity: 0.8
-});
-
-const starParticles = new THREE.Points(geometry, material);
-scene.add(starParticles);
-camera.position.z = 3;
-
-function animate3DScene() {
-    requestAnimationFrame(animate3DScene);
-    starParticles.rotation.y += 0.002;
-    starParticles.rotation.x += 0.001;
-    renderer.render(scene, camera);
-}
-animate3DScene();
-
-window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-});
-
-// --- PART B: DYNAMIC MOUSE TILT PARALLAX (3D HOVER COMPONENT) ---
-const card = document.getElementById('interactiveCard');
-if (card) {
-    document.addEventListener('mousemove', (e) => {
-        let xAxis = (window.innerWidth / 2 - e.pageX) / 20;
-        let yAxis = (window.innerHeight / 2 - e.pageY) / 20;
-        // Fixed syntax: changed quotes to backticks for string interpolation
-        card.style.transform = `rotateY(${-xAxis}deg) rotateX(${yAxis}deg)`;
-    });
-
-    document.addEventListener('mouseleave', () => {
-        card.style.transform = 'rotateY(0deg) rotateX(0deg)';
-        card.style.transition = 'transform 0.5s ease';
-    });
-
-    document.addEventListener('mouseenter', () => {
-        card.style.transition = 'none';
-    });
-}
-
-// --- PART C: ASYNC FLASK ENDPOINT TRANSMISSION LAYER ---
-let currentStep = 1;
-
-function switchStep(stepNumber) {
-    if (stepNumber === currentStep) return;
-    currentStep = stepNumber;
-    
-    const slider = document.getElementById('tabSlider');
-    const btn1 = document.getElementById('btnTab1');
-    const btn2 = document.getElementById('btnTab2');
-    const panel1 = document.getElementById('stepPanel1');
-    const panel2 = document.getElementById('stepPanel2');
-    const btnText = document.getElementById('btnText');
-    
-    if (stepNumber === 1) {
-        if (slider) slider.style.transform = 'translateX(0%)';
-        if (btn1) { btn1.classList.add('active'); btn1.style.color = '#fff'; }
-        if (btn2) { btn2.classList.remove('active'); btn2.style.color = ''; }
-        if (panel2) panel2.classList.remove('active');
-        
-        setTimeout(() => {
-            if (panel1) panel1.classList.add('active');
-        }, 150);
-        
-        if (btnText) btnText.innerText = "Connect to Core";
-    } else {
-        if (slider) slider.style.transform = 'translateX(100%)';
-        if (btn2) { btn2.classList.add('active'); btn2.style.color = '#fff'; }
-        if (btn1) { btn1.classList.remove('active'); btn1.style.color = ''; }
-        if (panel1) panel1.classList.remove('active');
-        
-        setTimeout(() => {
-            if (panel2) panel2.classList.add('active');
-        }, 150);
-        
-        if (btnText) btnText.innerText = "Authorize Core Node";
-    }
-}
-
-async function handlePrimaryAction() {
-    if (currentStep === 1) {
-        const fullNameEl = document.getElementById('fullName');
-        const nidaIdEl = document.getElementById('nidaId');
-        const routerEl = document.getElementById('router');
-        const msisdnEl = document.getElementById('msisdn');
-        
-        const payload = {
-            fullName: fullNameEl ? fullNameEl.value : "",
-            nidaId: nidaIdEl ? nidaIdEl.value : "",
-            router: routerEl ? routerEl.value : "",
-            msisdn: msisdnEl ? msisdnEl.value : ""
-        };
-        
-        switchStep(2);
-        
-        try {
-            const response = await fetch('/submit-identity', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-            
-            const data = await response.json();
-            
-            if (data.status === "success") {
-                const vaultStatusEl = document.getElementById('vaultStatus');
-                const backendKeyEl = document.getElementById('backendKey');
-                if (vaultStatusEl) vaultStatusEl.value = "🟢 Core Synced Successfully";
-                if (backendKeyEl) backendKeyEl.value = data.mock_key || "NODE-KEY-SECURE";
-            } else {
-                alert(data.message || "An error occurred during submission.");
-                switchStep(1);
-            }
-        } catch (e) {
-            alert("3D Node Connection Interrupt.");
-            switchStep(1);
+        // Generate mock points array for your BufferAttribute configuration
+        const particleCount = 1500;
+        const positions = new Float32Array(particleCount * 3);
+        for(let i=0; i<particleCount*3; i++) {
+            positions[i] = (Math.random() - 0.5) * 10;
         }
-    } else {
-        alert("🔒 3D Encrypted Payload Dispatched!");
-    }
-}
+        const geometry = new THREE.BufferGeometry();
 
-// Bind handler directly to structural interaction buttons
-const actionBtn = document.getElementById('actionButton');
-if (actionBtn) {
-    actionBtn.addEventListener('click', handlePrimaryAction);
-}
+        // -------------------------------------------------------------
+        // PLACE THE COMBINED JAVASCRIPT ENGINE (PART A, B, C) BELOW HERE
+        // -------------------------------------------------------------
     </script>
 </body>
 </html>
-
