@@ -7,17 +7,17 @@
     <style>
         :root {
             --bg-dark: #030712;
-            --surface-blur: rgba(17, 24, 39, 0.45);
+            --surface-blur: rgba(17, 24, 39, 0.55);
             --neon-blue: #2563eb;
             --cyan-glow: #38bdf8;
             --text-main: #f9fafb;
             --text-muted: #9ca3af;
-            --border-glow: rgba(255, 255, 255, 0.08);
+            --border-glow: rgba(255, 255, 255, 0.06);
             --gradient-accent: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
         }
         body {
             font-family: 'Segoe UI', system-ui, sans-serif;
-            background: #030712;
+            background: radial-gradient(circle at top right, #1e1b4b 0%, #030712 60%);
             color: var(--text-main);
             margin: 0;
             padding: 40px 20px;
@@ -25,200 +25,46 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
             box-sizing: border-box;
-            overflow-x: hidden;
-            position: relative;
         }
-
-        /* Dynamic 3D Moving Mesh Background Matrix */
-        .background-matrix {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: -1;
-            background: radial-gradient(circle at 80% 20%, #1e1b4b 0%, #030712 70%);
-            overflow: hidden;
-        }
-        .bg-node {
-            position: absolute;
-            background: linear-gradient(135deg, rgba(56, 189, 248, 0.15), rgba(37, 99, 235, 0.05));
-            border-radius: 50%;
-            filter: blur(40px);
-            animation: floatNode 25s infinite ease-in-out;
-            pointer-events: none;
-        }
-        @keyframes floatNode {
-            0%, 100% { transform: translateY(0) translateX(0) scale(1); }
-            33% { transform: translateY(-50px) translateX(70px) scale(1.2); }
-            66% { transform: translateY(60px) translateX(-40px) scale(0.9); }
-        }
-
-        /* 3D Parallax Viewport Perspective Container */
-        .perspective-container {
-            perspective: 1200px;
-            width: 100%;
-            max-width: 640px;
-            display: flex;
-            justify-content: center;
-            z-index: 10;
-        }
-
-        /* Premium App Shell with 3D Depth, Shading & Hardware Acceleration */
-        .app-shell { 
-            background: var(--surface-blur); 
-            backdrop-filter: blur(30px); 
-            -webkit-backdrop-filter: blur(30px);
-            width: 100%; 
-            padding: 50px; 
-            border-radius: 32px; 
-            box-shadow: 0 35px 80px rgba(0, 0, 0, 0.7), 
-                        inset 0 1px 0 rgba(255, 255, 255, 0.1); 
-            border: 1px solid var(--border-glow); 
-            box-sizing: border-box; 
-            transform-style: preserve-3d;
-            transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.2s ease;
-            will-change: transform;
-        }
-        
-        /* 3D Depth Pop Elements */
-        .brand-meta { 
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between; 
-            margin-bottom: 40px; 
-            transform: translateZ(35px);
-        }
-        .logo-text { font-size: 26px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; }
-        .logo-text span { color: var(--cyan-glow); text-shadow: 0 0 15px rgba(56, 189, 248, 0.4); }
-        .secure-badge { background: rgba(16, 185, 129, 0.1); color: #34d399; padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 700; border: 1px solid rgba(16, 185, 129, 0.25); text-shadow: 0 0 10px rgba(52, 211, 153, 0.2); }
-        
-        /* Interactive 3D Slotted Tab Component */
-        .tab-menu { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            background: rgba(0,0,0,0.4); 
-            padding: 6px; 
-            border-radius: 16px; 
-            border: 1px solid rgba(255,255,255,0.05); 
-            margin-bottom: 35px; 
-            transform: translateZ(25px);
-        }
-        .tab-btn { padding: 14px; background: transparent; color: var(--text-muted); font-weight: 700; font-size: 13px; text-transform: uppercase; cursor: pointer; border-radius: 12px; text-align: center; border: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .tab-btn:hover { color: var(--text-main); background: rgba(255,255,255,0.03); }
-        .tab-btn.active { background: var(--gradient-accent); color: white; box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35); transform: scale(1.02); }
-        
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; transform: translateZ(20px); }
+        .app-shell { background: var(--surface-blur); backdrop-filter: blur(30px); max-width: 640px; width: 100%; padding: 50px; border-radius: 32px; box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6); border: 1px solid var(--border-glow); box-sizing: border-box; }
+        .brand-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 40px; }
+        .logo-text { font-size: 26px; font-weight: 900; text-transform: uppercase; }
+        .logo-text span { color: var(--cyan-glow); }
+        .secure-badge { background: rgba(16, 185, 129, 0.1); color: #34d399; padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 700; border: 1px solid rgba(16, 185, 129, 0.2); }
+        .tab-menu { display: grid; grid-template-columns: 1fr 1fr; background: rgba(0,0,0,0.3); padding: 6px; border-radius: 14px; border: 1px solid var(--border-glow); margin-bottom: 35px; }
+        .tab-btn { padding: 12px; background: transparent; color: var(--text-muted); font-weight: 700; font-size: 13px; text-transform: uppercase; cursor: pointer; border-radius: 10px; text-align: center; }
+        .tab-btn.active { background: var(--gradient-accent); color: white; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .span-2 { grid-column: span 2; }
-        label { font-weight: 700; color: var(--text-muted); display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 10px; }
+        label { font-weight: 700; color: var(--text-muted); display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 8px; }
+        input[type='text'], select { width: 100%; padding: 15px 18px; background: rgba(5, 7, 15, 0.7); color: var(--text-main); border: 1px solid var(--border-glow); border-radius: 14px; box-sizing: border-box; font-size: 15px; }
+        .btn-action { background: var(--gradient-accent); color: white; border: none; padding: 18px; font-size: 16px; font-weight: 800; border-radius: 14px; cursor: pointer; width: 100%; margin-top: 35px; box-shadow: 0 8px 25px rgba(37, 99, 235, 0.25); text-transform: uppercase; }
+        .alert-box { background: rgba(59, 130, 246, 0.1); color: #93c5fd; padding: 16px 20px; border-radius: 14px; margin-bottom: 30px; border: 1px solid rgba(59, 130, 246, 0.2); font-size: 14px; font-weight: 600; border-left: 5px solid var(--neon-blue); }
+        .error-msg { background: rgba(239, 68, 68, 0.1); color: #fca5a5; padding: 16px 20px; border-radius: 14px; margin-bottom: 30px; border: 1px solid rgba(239, 68, 68, 0.2); font-size: 14px; font-weight: 600; border-left: 5px solid #ef4444; }
         
-        /* Dynamic Shadow Focus Form Inputs */
-        input[type='text'], select { width: 100%; padding: 16px 20px; background: rgba(5, 7, 15, 0.85); color: var(--text-main); border: 1px solid var(--border-glow); border-radius: 14px; box-sizing: border-box; font-size: 15px; transition: all 0.3s ease; }
-        input[type='text']:focus, select:focus { outline: none; border-color: var(--cyan-glow); box-shadow: 0 0 20px rgba(56, 189, 248, 0.15), inset 0 1px 1px rgba(255,255,255,0.05); background: rgba(5, 7, 15, 0.95); }
+        .qr-card-overlay { background: rgba(15, 23, 42, 0.6); padding: 25px; border-radius: 20px; border: 1px solid rgba(16, 185, 129, 0.3); text-align: center; margin-bottom: 35px; box-shadow: 0 0 30px rgba(16, 185, 129, 0.1); }
         
-        /* 3D Tactile Action Buttons */
-        .btn-action { background: var(--gradient-accent); color: white; border: none; padding: 18px; font-size: 15px; font-weight: 800; border-radius: 14px; cursor: pointer; width: 100%; margin-top: 35px; box-shadow: 0 8px 25px rgba(37, 99, 235, 0.3); text-transform: uppercase; letter-spacing: 1px; transition: all 0.2s ease; position: relative; overflow: hidden; }
-        .btn-action:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(37, 99, 235, 0.45); }
-        .btn-action:active { transform: translateY(1px); box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3); }
-        
-        .alert-box { background: rgba(59, 130, 246, 0.08); color: #93c5fd; padding: 16px 20px; border-radius: 14px; margin-bottom: 30px; border: 1px solid rgba(59, 130, 246, 0.15); font-size: 14px; font-weight: 600; border-left: 5px solid var(--neon-blue); transform: translateZ(15px); }
-        .error-msg { background: rgba(239, 68, 68, 0.08); color: #fca5a5; padding: 16px 20px; border-radius: 14px; margin-bottom: 30px; border: 1px solid rgba(239, 68, 68, 0.15); font-size: 14px; font-weight: 600; border-left: 5px solid #ef4444; transform: translateZ(15px); }
-        
-        /* Floating 3D QR Matrix Overlay Card */
-        .qr-card-overlay { background: rgba(15, 23, 42, 0.7); padding: 30px; border-radius: 24px; border: 1px solid rgba(16, 185, 129, 0.35); text-align: center; margin-bottom: 40px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 40px rgba(16, 185, 129, 0.15); transform: translateZ(45px); transition: transform 0.3s ease; }
-        .qr-card-overlay:hover { transform: translateZ(55px) scale(1.01); }
-        
+        /* 📱 CLEAN DISPLAY WITH BUILT-IN SIZE SAFEGUARDS FOR IMAGES */
         .qr-element-container { 
             background: #ffffff; 
             padding: 16px; 
             display: inline-block; 
-            border-radius: 20px; 
-            margin: 20px auto; 
-            box-shadow: 0 15px 35px rgba(0,0,0,0.35); 
+            border-radius: 16px; 
+            margin: 15px auto; 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2); 
             width: 172px;
             height: 172px;
             box-sizing: border-box;
-            transition: transform 0.3s ease;
         }
-        .qr-element-container:hover { transform: scale(1.05) rotate(2deg); }
-        .qr-element-container img { display: block; width: 140px; height: 140px; }
-
-        /* Animation Framework for Section Transitions */
-        .fade-in-stack { animation: complexFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        @keyframes complexFade {
-            from { opacity: 0; transform: translateZ(-20px) translateY(10px); }
-            to { opacity: 1; transform: translateZ(20px) translateY(0); }
+        .qr-element-container img {
+            display: block;
+            width: 140px;
+            height: 140px;
         }
     </style>
 </head>
 <body>
-
-    <!-- 3D Background Matrix Generation Layer -->
-    <div class="background-matrix">
-        <div class="bg-node" style="width: 400px; height: 400px; top: -10%; right: -5%; animation-duration: 20s;"></div>
-        <div class="bg-node" style="width: 350px; height: 350px; bottom: -5%; left: -5%; animation-duration: 28s; animation-delay: -5s;"></div>
-    </div>
-
-    <!-- 3D Perspective Space Frame -->
-    <div class="perspective-container">
-        <div class="app-shell" id="interactiveShell">
-            
-            <div class="brand-meta">
-                <div class="logo-text">Moja<span>ID</span></div>
-                <div class="secure-badge">🛡️ E2EE Protocol Secure</div>
-            </div>
-            
-            <!-- RENDERING THE FLOATING WALLET TOKEN IF ACTIVATED BY THE BACKEND -->
-            {% if qr_data %}
-                <div class="qr-card-overlay">
-                    <h3 style="color:#34d399; margin:0 0 8px 0; font-size: 18px;">🎉 MojaID Synchronization Successful!</h3>
-                    <p style="color:var(--text-muted); font-size:13px; margin:0; line-height: 1.4;">Flash this secure QR asset at any accredited hospital or financial node terminal.</p>
-                    
-                    <div class="qr-element-container">
-                        <img src="{{ qr_data }}" alt="MojaID QR Matrix Token">
-                    </div>
-                    
-                    <div style="font-family:monospace; font-size:11px; color:var(--text-muted); margin-top: 10px; letter-spacing: 0.5px;">🛡️ DECENTRALIZED IDENTITY REGISTRY TOKEN GENERATED</div>
-                </div>
-            {% endif %}
-
-            <div class="tab-menu">
-                <button type="button" class="tab-btn active" id="profileTab" onclick="switchSection('demographics')">1. Identity Core</button>
-
-    <!-- 3D Background Matrix Generation Layer -->
-    <div class="background-matrix">
-        <div class="bg-node" style="width: 400px; height: 400px; top: -10%; right: -5%; animation-duration: 20s;"></div>
-        <div class="bg-node" style="width: 350px; height: 350px; bottom: -5%; left: -5%; animation-duration: 28s; animation-delay: -5s;"></div>
-    </div>
-
-    <!-- 3D Perspective Space Frame -->
-    <div class="perspective-container">
-        <div class="app-shell" id="interactiveShell">
-            
-            <div class="brand-meta">
-                <div class="logo-text">Moja<span>ID</span></div>
-                <div class="secure-badge">🛡️ E2EE Protocol Secure</div>
-            </div>
-            
-            <!-- RENDERING THE FLOATING WALLET TOKEN IF ACTIVATED BY THE BACKEND -->
-            {% if qr_data %}
-                <div class="qr-card-overlay">
-                    <h3 style="color:#34d399; margin:0 0 8px 0; font-size: 18px;">🎉 MojaID Synchronization Successful!</h3>
-                    <p style="color:var(--text-muted); font-size:13px; margin:0; line-height: 1.4;">Flash this secure QR asset at any accredited hospital or financial node terminal.</p>
-                    
-                    <div class="qr-element-container">
-                        <img src="{{ qr_data }}" alt="MojaID QR Matrix Token">
-                    </div>
-                    
-                    <div style="font-family:monospace; font-size:11px; color:var(--text-muted); margin-top: 10px; letter-spacing: 0.5px;">🛡️ DECENTRALIZED IDENTITY REGISTRY TOKEN GENERATED</div>
-                </div>
-            {% endif %}
-
-            <div class="tab-menu">
-                <button type="button" class="tab-btn active" id="profileTab" onclick="switchSection('demographics')">1. Identity Core</button>
-
     <div class="app-shell">
         <div class="brand-meta">
             <div class="logo-text">Moja<span>ID</span></div>
