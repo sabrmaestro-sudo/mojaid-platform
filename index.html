@@ -187,6 +187,38 @@
             <div class="tab-menu">
                 <button type="button" class="tab-btn active" id="profileTab" onclick="switchSection('demographics')">1. Identity Core</button>
 
+    <!-- 3D Background Matrix Generation Layer -->
+    <div class="background-matrix">
+        <div class="bg-node" style="width: 400px; height: 400px; top: -10%; right: -5%; animation-duration: 20s;"></div>
+        <div class="bg-node" style="width: 350px; height: 350px; bottom: -5%; left: -5%; animation-duration: 28s; animation-delay: -5s;"></div>
+    </div>
+
+    <!-- 3D Perspective Space Frame -->
+    <div class="perspective-container">
+        <div class="app-shell" id="interactiveShell">
+            
+            <div class="brand-meta">
+                <div class="logo-text">Moja<span>ID</span></div>
+                <div class="secure-badge">🛡️ E2EE Protocol Secure</div>
+            </div>
+            
+            <!-- RENDERING THE FLOATING WALLET TOKEN IF ACTIVATED BY THE BACKEND -->
+            {% if qr_data %}
+                <div class="qr-card-overlay">
+                    <h3 style="color:#34d399; margin:0 0 8px 0; font-size: 18px;">🎉 MojaID Synchronization Successful!</h3>
+                    <p style="color:var(--text-muted); font-size:13px; margin:0; line-height: 1.4;">Flash this secure QR asset at any accredited hospital or financial node terminal.</p>
+                    
+                    <div class="qr-element-container">
+                        <img src="{{ qr_data }}" alt="MojaID QR Matrix Token">
+                    </div>
+                    
+                    <div style="font-family:monospace; font-size:11px; color:var(--text-muted); margin-top: 10px; letter-spacing: 0.5px;">🛡️ DECENTRALIZED IDENTITY REGISTRY TOKEN GENERATED</div>
+                </div>
+            {% endif %}
+
+            <div class="tab-menu">
+                <button type="button" class="tab-btn active" id="profileTab" onclick="switchSection('demographics')">1. Identity Core</button>
+
     <div class="app-shell">
         <div class="brand-meta">
             <div class="logo-text">Moja<span>ID</span></div>
