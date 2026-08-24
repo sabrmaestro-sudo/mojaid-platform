@@ -12,21 +12,21 @@ app.secret_key = os.environ.get("SECRET_KEY", "prod_mojaid_security_layer_99213"
 # HIGH-VOLUME TRANSACTION ENGINE CACHE POOL
 RECORDS_MEM_POOL = [
     {
-        "name": "Baraka Minshemi", 
+        "name": "Maestro Resilient", 
         "hash": "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92", 
         "net": "Vodacom M-Pesa", "fee": 500, "ref": "TX17684011MZ", "time": "18:24:05",
-        "nhif": "NHIF-488219", "license": "Class A, B", "bank": "NMB Bank", "status": "Active"
+        "nhif": "NHIF-488219", "license": "Class A, B, C", "bank": "NMB Bank", "status": "Active"
     },
     {
-        "name": "Fatma Said", 
+        "name": "Marylin Monroe", 
         "hash": "4a821eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923abc8d11", 
         "net": "Tigo Pesa", "fee": 500, "ref": "TX17684299MZ", "time": "18:15:32",
-        "nhif": "NOT LINKED", "license": "Class B", "bank": "CRDB Bank", "status": "Active"
+        "nhif": "NHIF-212197", "license": "Class A", "bank": "CRDB Bank", "status": "Active"
     }
 ]
 
 SECRET_ADMIN_TOKEN = "fungua-mojaid-revenue-2026"
-B2B_API_TOKEN = "Hawabr#8"
+B2B_API_TOKEN = "mojaid_live_b2b_token_xyz789"
 
 # 💳 NEW: PARTNER WALLET SYSTEM (Preloaded with 5,000 TZS for testing)
 B2B_PARTNER_WALLETS = {
